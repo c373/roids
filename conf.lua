@@ -1,7 +1,7 @@
 function love.conf( t )
 
-	t.window.width = 1024
-	t.window.height = 575
+	t.window.width = 1366
+	t.window.height = 768
 	t.window.borderless = true
 
 	t.modules.joystick = false
