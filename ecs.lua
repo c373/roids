@@ -137,7 +137,6 @@ end
 
 function ecs:getComponent( id, type )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 
@@ -147,4 +146,26 @@ function ecs:getComponent( id, type )
 
 	return self.components[id*self.entitySize + t]
 
-end`
+end
+
+function ecs:checkComponent( id, type )
+
+	ecs:isEntity( id )
+	ecs:isType( type )
+
+	local t = ecs:resolveType( type )
+
+	return self.entities[id + 1][t]
+
+end
+
+function ecs:checkComponents( id, ... )
+
+	ecs:isEntity( id )
+	ecs:isType( type )
+
+	local t = ecs:resolveType( type )
+
+	return self.entities[id + 1][t]
+
+end
