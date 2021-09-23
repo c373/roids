@@ -13,7 +13,7 @@ function love.load()
 
 	ecs:addComponent( 0, "position", { x = 100, y = 100 } )
 
-	print(tostring( ecs:getComponent( 0, "position" )["x"] ))
+	print( tostring( ecs:getComponent( 0, "position" )["x"] ) )
 
 	ecs:removeComponent( 0, "position" )
 

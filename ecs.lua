@@ -101,7 +101,6 @@ end
 
 function ecs:removeEntity( id )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 
 	self.emptyIDs[#self.emptyIDs + 1] = id
@@ -114,7 +113,6 @@ end
 
 function ecs:addComponent( id, type, data )
 	
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 	assert( data, "no data input" )
@@ -128,7 +126,6 @@ end
 
 function ecs:removeComponent( id, type )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 
@@ -150,4 +147,4 @@ function ecs:getComponent( id, type )
 
 	return self.components[id*self.entitySize + t]
 
-end
+end`
