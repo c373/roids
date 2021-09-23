@@ -101,7 +101,6 @@ end
 
 function ecs:removeEntity( id )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 
 	self.emptyIDs[#self.emptyIDs + 1] = id
@@ -114,7 +113,6 @@ end
 
 function ecs:addComponent( id, type, data )
 	
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 	assert( data, "no data input" )
@@ -128,7 +126,6 @@ end
 
 function ecs:removeComponent( id, type )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 
@@ -140,7 +137,6 @@ end
 
 function ecs:getComponent( id, type )
 
-	ecs:isInit()
 	ecs:isEntity( id )
 	ecs:isType( type )
 
@@ -149,5 +145,27 @@ function ecs:getComponent( id, type )
 	assert( self.entities[id + 1][t], "component is inactive" )
 
 	return self.components[id*self.entitySize + t]
+
+end
+
+function ecs:checkComponent( id, type )
+
+	ecs:isEntity( id )
+	ecs:isType( type )
+
+	local t = ecs:resolveType( type )
+
+	return self.entities[id + 1][t]
+
+end
+
+function ecs:checkComponents( id, ... )
+
+	ecs:isEntity( id )
+	ecs:isType( type )
+
+	local t = ecs:resolveType( type )
+
+	return self.entities[id + 1][t]
 
 end
