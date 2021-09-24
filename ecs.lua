@@ -76,7 +76,7 @@ function ecs:newEntity()
 
 		local id = table.remove( self.emptyIDs )
 
-		for i = 2, self.entitySize + 1, 1 do
+		for i = 2, self.entitySize do
 
 			self.entities[id + 1][i] = false
 
@@ -84,13 +84,15 @@ function ecs:newEntity()
 
 		self.entities[id + 1][1] = true
 
+		return id
+
 	else
 
 		self.entityCount = self.entityCount + 1
 
 		self.entities[#self.entities + 1] = {}
 
-		for i = 2, self.entitySize + 1 do
+		for i = 2, self.entitySize do
 
 			self.entities[#self.entities][i] = false
 			self.components[#self.components + 1] = {}
@@ -126,7 +128,7 @@ function ecs:addComponent( id, type, data )
 	local t = ecs:resolveType( type )
 
 	self.entities[id + 1][t] = true
-	self.components[id*self.entitySize + t] = data
+	self.components[id * self.entitySize + t] = data
 
 end
 
