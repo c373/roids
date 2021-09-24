@@ -48,7 +48,7 @@ function love.update()
 	local pos = ecs:getComponent( 0, "position" )
 
 	pos[1] = pos[1] + dx
-	--pos[2] = pos[2] + dy
+	pos[2] = pos[2] + dy
 
 end
 
