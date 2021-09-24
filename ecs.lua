@@ -26,7 +26,8 @@ ecs = {
 	entityCount = 0,
 	entities = {}, --contains ordered by index the component flag tables for all entities
 	emptyIDs = {},
-	components = {}
+	components = {},
+	nextIndex = -1
 }
 
 ecs.__index = ecs
@@ -41,6 +42,8 @@ function ecs:init()
 
 	self.entitySize = count + 1
 	self.intialized = true
+
+	nextIndex = 1
 
 end
 
@@ -137,7 +140,6 @@ end
 
 function ecs:getComponent( id, type )
 
-	ecs:isEntity( id )
 	ecs:isType( type )
 
 	local t = ecs:resolveType( type )
@@ -150,7 +152,6 @@ end
 
 function ecs:checkComponent( id, type )
 
-	ecs:isEntity( id )
 	ecs:isType( type )
 
 	local t = ecs:resolveType( type )
@@ -162,10 +163,23 @@ end
 function ecs:checkComponents( id, ... )
 
 	ecs:isEntity( id )
-	ecs:isType( type )
 
-	local t = ecs:resolveType( type )
+	local match = true
 
-	return self.entities[id + 1][t]
+	for i = 1, select( "#", ... ) do
+
+		if ecs:checkComponent( id, select( i, ... ) ) == false then
+			match = false
+		end
+
+	end
+
+	return match
+
+end
+
+function ecs:Next( ... )
+
+	
 
 end
