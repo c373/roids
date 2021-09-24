@@ -7,25 +7,17 @@ function love.load()
 
 	ecs:init()
 
-	for i = 1, 10 do
+	for i = 0, 9 do
 		ecs:newEntity()
-		ecs:addComponent( i - 1, "position", { 100 + 25 * i, 100 } )
-		ecs:addComponent( i - 1, "model", { -10, -10, 10, -10, 0, 10 } )
+		ecs:addComponent( i, "position", { 100 + 25 * i, 100 } )
+		ecs:addComponent( i, "model", { -10, -10, 10, -10, 0, 10 } )
 	end
 
-	print(#ecs.entities)
+	local id = ecs:newEntity()
+	ecs:addComponent( id, "position", { 500, 500 } )
+	ecs:addComponent( id, "model", { -10, -10, -10, 10, 10, 10, 10, -10 } )
 
-	local bool = ecs:checkComponents( 0, "position", "model" )
-	print( bool )
-
-	local test1 = { 10, 10 }
-	local test2 = { -10, 10 }
-
-	print( test1[1]..test1[2] )
-
-	returnt( test1 )[1] = test2[1]
-
-	print( test1[1]..test1[2] )
+	ecs:addComponent( 0, "playerInput", true )
 
 end
 
@@ -45,28 +37,40 @@ function love.update()
 		dy = 1
 	end
 
-	local pos = ecs:getComponent( 0, "position" )
+	local id
+	repeat
 
-	pos[1] = pos[1] + dx
-	pos[2] = pos[2] + dy
+		id = ecs:next( "position", "playerInput" )
 
-end
+		if id == -1 then break end
 
-function returnt( t )
-	return t
+		local pos = ecs:getComponent( id, "position" )
+
+		pos[1] = pos[1] + dx
+		pos[2] = pos[2] + dy
+
+	until( id == -1 )
+
 end
 
 
 function love.draw()
 	
-	for k, v in ipairs( ecs.entities ) do
-		
-		local pos = ecs:getComponent( k - 1, "position" )
+	local id
+	repeat
+
+		id = ecs:next( "position", "model" )
+
+		if id == -1 then break end
+
 		love.graphics.push()
+
+		local pos = ecs:getComponent( id, "position" )
 		love.graphics.translate( pos[1], pos[2] )
-		love.graphics.polygon( "line", ecs:getComponent( k - 1, "model" ) )
+		love.graphics.polygon( "line", ecs:getComponent( id, "model" ) )
+
 		love.graphics.pop()
 
-	end
+	until( id == -1 )
 
 end

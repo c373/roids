@@ -8,7 +8,8 @@ componentType = {
 	"rotation",
 	"direction",
 	"speed",
-	"model"
+	"model",
+	"playerInput"
 }
 
 internType = {
@@ -16,7 +17,8 @@ internType = {
 	rotation = 3,
 	direction = 4,
 	speed = 5,
-	model = 6
+	model = 6,
+	playerInput = 7
 }
 
 --main object to implement the ecs design pattern
@@ -27,7 +29,8 @@ ecs = {
 	entities = {}, --contains ordered by index the component flag tables for all entities
 	emptyIDs = {},
 	components = {},
-	nextIndex = -1
+	nextIndex = 0,
+	lastSearch = nil
 }
 
 ecs.__index = ecs
@@ -73,7 +76,7 @@ function ecs:newEntity()
 
 		local id = table.remove( self.emptyIDs )
 
-		for i = 2, self.entitySize, 1 do
+		for i = 2, self.entitySize + 1, 1 do
 
 			self.entities[id + 1][i] = false
 
@@ -162,8 +165,6 @@ end
 
 function ecs:checkComponents( id, ... )
 
-	ecs:isEntity( id )
-
 	local match = true
 
 	for i = 1, select( "#", ... ) do
@@ -178,8 +179,31 @@ function ecs:checkComponents( id, ... )
 
 end
 
-function ecs:Next( ... )
+function ecs:next( ... ) --returns the index of the next entity to match the component list
 
-	
+	--if the component list is different from the last next() call then restart the search from the beginning of the entity array
+	if self.lastSearch ~= ... then
+		self.lastSearch = ...
+		self.nextIndex = 0
+	end
+
+	local matchIndex
+
+	for i = self.nextIndex, self.entityCount - 1 do --loops until a match is found and returns the index of the match, and setups the nextIndex for subsequent searches
+
+		 if ecs:checkComponents( i, ... ) then
+
+			matchIndex = i
+			self.nextIndex = i + 1
+			return matchIndex
+
+		 end
+
+	end
+
+	--no match was found reset the index to point to the beginning of the array and return -1
+	self.nextIndex = 0
+
+	return -1
 
 end
