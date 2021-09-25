@@ -42,6 +42,8 @@ function love.update()
 
 		id = ecs:next( "position", "playerInput" )
 
+		print( id )
+
 		if id == -1 then break end
 
 		local pos = ecs:getComponent( id, "position" )
