@@ -30,6 +30,10 @@ end
 
 function love.load()
 
+	love.frame = 0
+	love.profiler = require( "profile" )
+	love.profiler.start()
+
 	drawingSystem.filter = tiny.requireAll( "position", "model" )
 
 	entities = {}
