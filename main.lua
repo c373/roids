@@ -2,6 +2,16 @@ require "callbacks"
 require "ecs"
 
 local dx, dy = 0, 0
+local angle = 0
+
+function rotate( x, y, a )
+
+	local c = math.cos( a )
+	local s = math.sin( a )
+
+	return c*x - s*y, s*x + c*y
+
+end
 
 function love.load()
 
@@ -11,30 +21,31 @@ function love.load()
 		ecs:newEntity()
 		ecs:addComponent( i, "position", { 100 + 25 * i, 100 } )
 		ecs:addComponent( i, "model", { -10, -10, 10, -10, 0, 10 } )
+		ecs:addComponent( i, "rotation", 0 )
 	end
 
 	local id = ecs:newEntity()
 	ecs:addComponent( id, "position", { 500, 500 } )
+	ecs:addComponent( id, "rotation", 0 )
 	ecs:addComponent( id, "model", { -10, -10, -10, 10, 10, 10, 10, -10 } )
-
-	ecs:addComponent( 0, "playerInput", true )
+	ecs:addComponent( id, "playerInput", true )
 
 end
 
-function love.update()
+function love.update( dt )
 
 	dx, dy = 0, 0
 
 	if love.keyboard.isDown( "a" ) then
-		dx = -1
+		angle = angle - 0.05
 	elseif love.keyboard.isDown( "d" ) then
-		dx = 1
+		angle = angle + 0.05
 	end
 
 	if love.keyboard.isDown( "w" ) then
-		dy = -1
+		dy = -300 * dt
 	elseif love.keyboard.isDown( "s" ) then
-		dy = 1
+		dy = 300 * dt
 	end
 
 	local id
@@ -45,9 +56,15 @@ function love.update()
 		if id == -1 then break end
 
 		local pos = ecs:getComponent( id, "position" )
+		local x, y = rotate( dx, dy, angle )		
 
-		pos[1] = pos[1] + dx
-		pos[2] = pos[2] + dy
+		pos[1] = pos[1] + x
+		pos[2] = pos[2] + y
+
+		--pos[1] = pos[1] + dx
+		--pos[2] = pos[2] + dy
+
+		ecs:setComponent( id, "rotation", angle )
 
 	until( id == -1 )
 
@@ -67,6 +84,8 @@ function love.draw()
 
 		local pos = ecs:getComponent( id, "position" )
 		love.graphics.translate( pos[1], pos[2] )
+		love.graphics.print( tostring( angle ), -20, -20 )
+		love.graphics.rotate( ecs:getComponent( id, "rotation" ) )
 		love.graphics.polygon( "line", ecs:getComponent( id, "model" ) )
 
 		love.graphics.pop()

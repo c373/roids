@@ -156,6 +156,19 @@ function ecs:getComponent( id, type )
 
 end
 
+function ecs:setComponent( id, type, data )
+
+	ecs:isType( type )
+	assert( data, "no data input" )
+
+	local t = ecs:resolveType( type )
+
+	assert( self.entities[id + 1][t], "component is inactive" )
+
+	self.components[id*self.entitySize + t] = data
+
+end
+
 function ecs:checkComponent( id, type )
 
 	ecs:isType( type )
