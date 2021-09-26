@@ -27,7 +27,7 @@ function love.load()
 	local id = ecs:newEntity()
 	ecs:addComponent( id, "position", { 500, 500 } )
 	ecs:addComponent( id, "rotation", 0 )
-	ecs:addComponent( id, "model", { -10, -10, -10, 10, 10, 10, 10, -10 } )
+	ecs:addComponent( id, "model", { -10, 10, 10, 10, 0, -10 } )
 	ecs:addComponent( id, "playerInput", true )
 
 end
@@ -55,14 +55,11 @@ function love.update( dt )
 
 		if id == -1 then break end
 
+		local x, y = rotate( dx, dy, angle )
 		local pos = ecs:getComponent( id, "position" )
-		local x, y = rotate( dx, dy, angle )		
 
 		pos[1] = pos[1] + x
 		pos[2] = pos[2] + y
-
-		--pos[1] = pos[1] + dx
-		--pos[2] = pos[2] + dy
 
 		ecs:setComponent( id, "rotation", angle )
 
@@ -84,7 +81,11 @@ function love.draw()
 
 		local pos = ecs:getComponent( id, "position" )
 		love.graphics.translate( pos[1], pos[2] )
-		love.graphics.print( tostring( angle ), -20, -20 )
+
+		if ecs:checkComponent( id, "playerInput" ) then
+			love.graphics.print( angle, -30, -30 )
+		end
+
 		love.graphics.rotate( ecs:getComponent( id, "rotation" ) )
 		love.graphics.polygon( "line", ecs:getComponent( id, "model" ) )
 
