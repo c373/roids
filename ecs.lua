@@ -2,9 +2,12 @@
 --                         E C S                         --
 -----------------------------------------------------------
 
+--components are simple data containers
+--entities are composed of an active flag (entities[id][1]) and list of flags for all the possible component types available (entities[id][2...])
+
 --table containing all the possible component types
 componentType = {
-	[2] = "position",
+	"position",
 	"rotation",
 	"direction",
 	"speed",
@@ -12,14 +15,8 @@ componentType = {
 	"playerInput"
 }
 
-internType = {
-	position = 2,
-	rotation = 3,
-	direction = 4,
-	speed = 5,
-	model = 6,
-	playerInput = 7
-}
+internType = {} --the internal table used to access the indices of where each component type is stored by type
+				--the key is a string corresponding 
 
 --main object to implement the ecs design pattern
 ecs = {
@@ -39,8 +36,12 @@ function ecs:init()
 
 	local count = 0
 
-	for k in ipairs( componentType ) do
+	for k, v in ipairs( componentType ) do
+
 		count = count + 1
+
+		internType[tostring(v)] = k + 1
+
 	end
 
 	self.entitySize = count + 1
