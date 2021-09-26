@@ -15,9 +15,13 @@ end
 
 function love.load()
 
+	love.frame = 0
+	love.profiler = require( "profile" )
+	love.profiler.start()
+
 	ecs:init()
 
-	for i = 0, 9 do
+	for i = 0, 900 do
 		ecs:newEntity()
 		ecs:addComponent( i, "position", { 100 + 25 * i, 100 } )
 		ecs:addComponent( i, "model", { -10, -10, 10, -10, 0, 10 } )
@@ -33,6 +37,13 @@ function love.load()
 end
 
 function love.update( dt )
+
+	love.frame = love.frame + 1
+
+	if love.frame % 100 == 0 then
+		love.report = love.profiler.report( 20 )
+		love.profiler.reset()
+	end
 
 	dx, dy = 0, 0
 
@@ -69,6 +80,8 @@ end
 
 
 function love.draw()
+
+	love.graphics.print( love.report or "Please wait...", 0, 0 )
 	
 	local id
 	repeat
