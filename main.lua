@@ -1,8 +1,23 @@
 require "callbacks"
-require "ecs"
+local tiny = require( "tiny" )
+
+
 
 local dx, dy = 0, 0
 local angle = 0
+
+local drawingSystem = tiny.processingSystem()
+
+function drawingSystem:process( e )
+
+	love.graphics.push()
+
+	love.graphics.translate( e.position[1], e.position[2] )
+	love.graphics.polygon( "line", e.model )
+
+	love.graphics.pop()
+
+end
 
 function rotate( x, y, a )
 
@@ -15,24 +30,25 @@ end
 
 function love.load()
 
-	love.frame = 0
-	love.profiler = require( "profile" )
-	love.profiler.start()
+	drawingSystem.filter = tiny.requireAll( "position", "model" )
 
-	ecs:init()
+	entities = {}
 
-	for i = 0, 900 do
-		ecs:newEntity()
-		ecs:addComponent( i, "position", { 100 + 25 * i, 100 } )
-		ecs:addComponent( i, "model", { -10, -10, 10, -10, 0, 10 } )
-		ecs:addComponent( i, "rotation", 0 )
+	for i = 1, 900 do
+
+		table.insert(
+			entities,
+			{
+				position = { 0 + i * 25, 0 },
+				model = { 0, 0, 10, 10, 10, 0 }
+			}
+		)
+
 	end
 
-	local id = ecs:newEntity()
-	ecs:addComponent( id, "position", { 500, 500 } )
-	ecs:addComponent( id, "rotation", 0 )
-	ecs:addComponent( id, "model", { -10, 10, 10, 10, 0, -10 } )
-	ecs:addComponent( id, "playerInput", true )
+	print( #entities )
+
+	world = tiny.world( drawingSystem, entities )
 
 end
 
@@ -59,6 +75,7 @@ function love.update( dt )
 		dy = 300 * dt
 	end
 
+	--[[
 	local id
 	repeat
 
@@ -74,7 +91,7 @@ function love.update( dt )
 
 		ecs:setComponent( id, "rotation", angle )
 
-	until( id == -1 )
+	until( id == -1 )]]--
 
 end
 
@@ -83,27 +100,8 @@ function love.draw()
 
 	love.graphics.print( love.report or "Please wait...", 0, 0 )
 	
-	local id
-	repeat
-
-		id = ecs:next( "position", "model" )
-
-		if id == -1 then break end
-
-		love.graphics.push()
-
-		local pos = ecs:getComponent( id, "position" )
-		love.graphics.translate( pos[1], pos[2] )
-
-		if ecs:checkComponent( id, "playerInput" ) then
-			love.graphics.print( angle, -30, -30 )
-		end
-
-		love.graphics.rotate( ecs:getComponent( id, "rotation" ) )
-		love.graphics.polygon( "line", ecs:getComponent( id, "model" ) )
-
-		love.graphics.pop()
-
-	until( id == -1 )
+	for i = 1, #entities do
+		drawingSystem:process( entities[i] )
+	end
 
 end
