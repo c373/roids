@@ -1,14 +1,13 @@
 require "callbacks"
+require "asteroids"
 
-local dx, dy = 0, 0
-local angle = 0
+function createAsteroid()
 
-function rotate( x, y, a )
-
-	local c = math.cos( a )
-	local s = math.sin( a )
-
-	return c*x - s*y, s*x + c*y
+	asteroid = love.graphics.newMesh(
+		newAsteroid( { min = 60, max = 100 }, { min = 25, max = 60 } ),
+		"fan",
+		"dynamic"
+	)
 
 end
 
@@ -18,30 +17,9 @@ function love.load()
 	love.profiler = require( "profile" )
 	love.profiler.start()
 
-	entities = {}
+	love.graphics.setWireframe( true )
 
-	for i = 0, 10 do
-		 for j = 0, 10 do
-			table.insert(
-				entities,
-				{
-					position = { j * 75, i * 75  },
-					model = love.graphics.newMesh(
-						{
-							{ 0, 0, 0, 0, 1, 0, 0, 1 },
-							{ 50, 0, 0, 0, 1, 1, 0, 1},
-							{ 50, 50, 0, 0, 0, 1, 1, 1},
-							{ 0, 50, 0, 0, 0, 0, 1, 1}
-						},
-						"fan",
-						"dynamic"
-					)
-				}
-			)
-		 end
-	end
-
-	print( #entities )
+	createAsteroid()
 
 end
 
@@ -54,28 +32,16 @@ function love.update( dt )
 		love.profiler.reset()
 	end
 
-	dx, dy = 0, 0
-
-	if love.keyboard.isDown( "a" ) then
-		angle = angle - 0.05
-	elseif love.keyboard.isDown( "d" ) then
-		angle = angle + 0.05
-	end
-
-	if love.keyboard.isDown( "w" ) then
-		dy = -300 * dt
-	elseif love.keyboard.isDown( "s" ) then
-		dy = 300 * dt
-	end
-
 end
 
 
 function love.draw()
-	
-	for i = 1, #entities do
-		love.graphics.draw( entities[i].model, entities[i].position[1], entities[i].position[2] )
-	end
+
+	love.graphics.setWireframe( true )
+
+	love.graphics.draw( asteroid, 400, 300 )
+
+	love.graphics.setWireframe( false )
 
 	love.graphics.print( love.report or "Please wait...", 0, 0 )
 

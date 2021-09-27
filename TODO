@@ -1,0 +1,17 @@
+P R O C E D U R A L    C R E A T I O N    O F    A S T E R O I D S
+
+	vertices concentric to the origin (0,0) and all within a specified range of the center: minRadius < radius < maxRadius
+	angle between vertices is: minAngle < angle < maxAngle
+
+	triangulate the polygon and add to the table of asteroids
+
+	all asteroid creation will take place in a seperate thread and only as needed to avoid dropping the frame rate of the main game loop
+
+	asteroids will be created outside the playable space but will be given a velocity depending on the side they are created on to bring them into playable
+
+	large asteroids when shot will be split into 2 smaller asteroids
+		- consider using an algorithm to divide the larger asteroid by it's vertices
+			- the split will just be a list of vertices along which to divide the asteroid the first will be the one nearest the collision and then either
+			the center or, using a ray derivitive of the projectile's velocity, generate a new vertex along the ray with some deviation and about midway between the intial vertex
+			and the final vertex which is the vertex nearest the collision of the ray on the far side of the asteroid, the second collision on the polygon as the ray exits
+			- or just create two smaller asteroids of abritary shapes
