@@ -1,23 +1,7 @@
 require "callbacks"
-local tiny = require( "tiny" )
-
-
 
 local dx, dy = 0, 0
 local angle = 0
-
-local drawingSystem = tiny.processingSystem()
-
-function drawingSystem:process( e )
-
-	love.graphics.push()
-
-	love.graphics.translate( e.position[1], e.position[2] )
-	love.graphics.polygon( "line", e.model )
-
-	love.graphics.pop()
-
-end
 
 function rotate( x, y, a )
 
@@ -34,25 +18,30 @@ function love.load()
 	love.profiler = require( "profile" )
 	love.profiler.start()
 
-	drawingSystem.filter = tiny.requireAll( "position", "model" )
-
 	entities = {}
 
-	for i = 1, 900 do
-
-		table.insert(
-			entities,
-			{
-				position = { 0 + i * 25, 0 },
-				model = { 0, 0, 10, 10, 10, 0 }
-			}
-		)
-
+	for i = 0, 10 do
+		 for j = 0, 10 do
+			table.insert(
+				entities,
+				{
+					position = { j * 75, i * 75  },
+					model = love.graphics.newMesh(
+						{
+							{ 0, 0, 0, 0, 1, 0, 0, 1 },
+							{ 50, 0, 0, 0, 1, 1, 0, 1},
+							{ 50, 50, 0, 0, 0, 1, 1, 1},
+							{ 0, 50, 0, 0, 0, 0, 1, 1}
+						},
+						"fan",
+						"dynamic"
+					)
+				}
+			)
+		 end
 	end
 
 	print( #entities )
-
-	world = tiny.world( drawingSystem, entities )
 
 end
 
@@ -79,33 +68,15 @@ function love.update( dt )
 		dy = 300 * dt
 	end
 
-	--[[
-	local id
-	repeat
-
-		id = ecs:next( "position", "playerInput" )
-
-		if id == -1 then break end
-
-		local x, y = rotate( dx, dy, angle )
-		local pos = ecs:getComponent( id, "position" )
-
-		pos[1] = pos[1] + x
-		pos[2] = pos[2] + y
-
-		ecs:setComponent( id, "rotation", angle )
-
-	until( id == -1 )]]--
-
 end
 
 
 function love.draw()
-
-	love.graphics.print( love.report or "Please wait...", 0, 0 )
 	
 	for i = 1, #entities do
-		drawingSystem:process( entities[i] )
+		love.graphics.draw( entities[i].model, entities[i].position[1], entities[i].position[2] )
 	end
+
+	love.graphics.print( love.report or "Please wait...", 0, 0 )
 
 end
