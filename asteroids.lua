@@ -19,7 +19,9 @@ function vertexListToVertexColorList( vertices )
 
 end
 
-function newAsteroid( radiusRange, angleRange )
+function newAsteroid( radiusRange )
+
+	local angleRange = { min = 25, max = 50 }
 
 	local angleEaten = 0
 

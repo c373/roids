@@ -4,7 +4,7 @@ require "asteroids"
 function createAsteroid()
 
 	asteroid = love.graphics.newMesh(
-		newAsteroid( { min = 60, max = 100 }, { min = 25, max = 60 } ),
+		newAsteroid( { min = 15, max = 30 } ),
 		"fan",
 		"dynamic"
 	)
@@ -43,6 +43,6 @@ function love.draw()
 
 	love.graphics.setWireframe( false )
 
-	love.graphics.print( love.report or "Please wait...", 0, 0 )
+	--love.graphics.print( love.report or "Please wait...", 0, 0 )
 
 end
