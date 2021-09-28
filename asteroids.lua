@@ -25,7 +25,8 @@ function newAsteroid( radiusRange )
 
 	local angleEaten = 0
 
-	local vertices = { 0, 0 }
+	--local vertices = { 0, 0 }
+	local vertices = { }
 	
 	while angleEaten < 360 do
 
@@ -52,9 +53,10 @@ function newAsteroid( radiusRange )
 
 	end
 
-	table.insert( vertices, vertices[3] )
-	table.insert( vertices, vertices[4] )  
+	--table.insert( vertices, vertices[3] )
+	--table.insert( vertices, vertices[4] )  
 
-	return vertexListToVertexColorList( vertices )
+	--return vertexListToVertexColorList( vertices )
+	return vertices
 
 end
