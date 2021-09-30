@@ -7,7 +7,8 @@ local playerShip = {
 	position = { 0, 0 },
 	posVel = { 0, 0 },
 	speed = 300,
-	rotation = 0
+	rotation = 0,
+	rotVel = math.rad( 360 )
 }
 
 function love.load()
@@ -45,13 +46,16 @@ function love.update( dt )
 
 	end
 
-	playerShip.posVel[1] = playerShip.posVel[1] * 0.99
-	playerShip.posVel[2] = playerShip.posVel[2] * 0.99
+	playerShip.posVel[1] = playerShip.posVel[1] * 0.999
+	playerShip.posVel[2] = playerShip.posVel[2] * 0.999
 
 	if love.keyboard.isDown( "up" ) then
+		
 		local vel = {  0, -1 }
 
 		rotate( vel, playerShip.rotation )
+
+		normalize( vel )
 		
 		playerShip.posVel[1] = playerShip.posVel[1] + vel[1]
 		playerShip.posVel[2] = playerShip.posVel[2] + vel[2]
@@ -61,10 +65,10 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "left" ) then
-		playerShip.rotation = playerShip.rotation - math.rad( 180 * dt )
+		playerShip.rotation = playerShip.rotation - playerShip.rotVel * dt
 	end
 	if love.keyboard.isDown( "right" ) then
-		playerShip.rotation = playerShip.rotation + math.rad( 180 * dt )
+		playerShip.rotation = playerShip.rotation + playerShip.rotVel * dt
 	end
 
 	playerShip.position[1] = playerShip.position[1] + playerShip.posVel[1] * playerShip.speed * dt
