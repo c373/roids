@@ -155,3 +155,4 @@ function love.keypressed( key, scancode, isrepeat )
 	if key == "space" then
 		bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation )
 	end
+end
