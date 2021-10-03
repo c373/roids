@@ -108,6 +108,8 @@ end
 
 function love.draw()
 
+	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
