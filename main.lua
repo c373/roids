@@ -17,6 +17,17 @@ local playerShip = {
 
 local boost = 2
 
+function thurst( accelSpeed )
+
+	local vel = {  0, -1 * accelSpeed }
+
+	rotate( vel, playerShip.rotation )
+		
+	playerShip.posVel[1] = playerShip.posVel[1] + vel[1]
+	playerShip.posVel[2] = playerShip.posVel[2] + vel[2]
+
+end
+
 function love.load()
 
 	debugInfo = false
@@ -61,12 +72,7 @@ function love.update( dt )
 
 	if love.keyboard.isDown( "up" ) then
 		
-		local vel = {  0, -1 * boost }
-
-		rotate( vel, playerShip.rotation )
-		
-		playerShip.posVel[1] = playerShip.posVel[1] + vel[1]
-		playerShip.posVel[2] = playerShip.posVel[2] + vel[2]
+		thurst( 1 )
 
 	end
 
@@ -98,9 +104,7 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "x" ) then
-		boost = 2
-	else
-		boost = 1
+		thurst( 2 )
 	end
 
 end
@@ -129,10 +133,9 @@ function love.draw()
 	if debugInfo then
 		love.graphics.line( playerShip.position[1], playerShip.position[2], playerShip.position[1] + playerShip.posVel[1], playerShip.position[2] + playerShip.posVel[2] )
 
-		love.graphics.push()
 		love.graphics.setWireframe( false )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.pop()
+		love.graphics.setWireframe( true )
 	end
 
 end
