@@ -120,7 +120,8 @@ function love.draw()
 	end
 
 	for i = 1, #bullets do
-		love.graphics.draw( bullets[i].model, bullets[i].position[1], bullets[i].position[2], bullets[i].rotation )
+local b = bullets[i]
+		love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation )
 	end
 
 	--main ship model
