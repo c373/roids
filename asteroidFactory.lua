@@ -42,7 +42,7 @@ function newAsteroidVertices( radiusRange )
 			angle = 360 - angleEaten
 		end
 
-		if 360 - angleEaten + angle < angleRange.min then
+		if 360 - ( angleEaten + angle ) < angleRange.min then
 			break
 		end
 
