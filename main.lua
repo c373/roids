@@ -70,16 +70,16 @@ function love.update( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] * 0.99
 	playerShip.posVel[2] = playerShip.posVel[2] * 0.99
 
-	if love.keyboard.isDown( "up" ) then
+	if love.keyboard.isDown( "k" ) then
 		
-		thurst( 10 )
+		thurst( 1 )
 
 	end
 
-	if love.keyboard.isDown( "left" ) then
+	if love.keyboard.isDown( "d" ) then
 		playerShip.rotation = playerShip.rotation - playerShip.rotVel * dt
 	end
-	if love.keyboard.isDown( "right" ) then
+	if love.keyboard.isDown( "f" ) then
 		playerShip.rotation = playerShip.rotation + playerShip.rotVel * dt
 	end
 
@@ -97,14 +97,6 @@ function love.update( dt )
 		playerShip.position[2] = 0
 	elseif playerShip.position[2] < 0 then
 		playerShip.position[2] = love.graphics.getHeight()
-	end
-
-	if love.keyboard.isDown( "space" ) then
-		--bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation )
-	end
-
-	if love.keyboard.isDown( "x" ) then
-		thurst( 2 )
 	end
 
 end
@@ -127,12 +119,18 @@ local b = bullets[i]
 	--main ship model
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
 
-	--draw 4 additional ships to smoothly render wrap transitions
+	--draw 8 additional ships to smoothly render wrap transitions
 	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2], playerShip.rotation )
 	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2], playerShip.rotation )
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
 
+	--corners
+	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
+	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
+	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
+	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
+	
 	if debugInfo then
 		love.graphics.line( playerShip.position[1], playerShip.position[2], playerShip.position[1] + playerShip.posVel[1], playerShip.position[2] + playerShip.posVel[2] )
 
@@ -156,7 +154,7 @@ function love.keypressed( key, scancode, isrepeat )
 		asteroids[#asteroids + 1] = createAsteroid()
 	end
 
-	if key == "space" then
+	if key == "j" then
 		bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation )
 	end
  end
