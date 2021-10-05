@@ -1,3 +1,6 @@
+
+
+
 require "asteroidFactory"
 require "bulletFactory"
 require "utils"
@@ -43,6 +46,10 @@ function love.load()
 	love.graphics.setWireframe( true )
 
 end
+
+------------------------------------------------------------
+--                     U P D A T E                        --
+------------------------------------------------------------
 
 function love.update( dt )
 
@@ -101,6 +108,9 @@ function love.update( dt )
 
 end
 
+------------------------------------------------------------
+--                       D R A W                          --
+------------------------------------------------------------
 
 function love.draw()
 
@@ -142,7 +152,7 @@ local b = bullets[i]
 end
 
 ------------------------------------------------------------
---                   C A L L B A C K S                    --
+--                  C A L L B A C K S                     --
 ------------------------------------------------------------
 
 function love.keypressed( key, scancode, isrepeat )
