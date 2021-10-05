@@ -72,7 +72,7 @@ function love.update( dt )
 
 	if love.keyboard.isDown( "up" ) then
 		
-		thurst( 1 )
+		thurst( 10 )
 
 	end
 
