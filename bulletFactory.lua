@@ -8,7 +8,7 @@ bullet = {
 
 bullet.__index = bullet
 
-function createBullet( position, rotation )
+function createBullet( position, rotation, vel )
 
 	local b = {}
 
@@ -17,6 +17,13 @@ function createBullet( position, rotation )
 	b.model = love.graphics.newMesh( { { -2, -2, 0, 0, 1, 1, 1, 1 }, { 2, -2, 0, 0, 1, 1, 1, 1 },  { 2, 2, 0, 0, 1, 1, 1, 1 }, { -2, 2, 0, 0, 1, 1, 1, 1 } }, "fan", "dynamic" )
 
 	b.position = { position[1], position[2] }
+
+	local offset = { 0, -10 }
+
+	rotate( offset, rotation )
+
+	b.position[1] = b.position[1] + offset[1]
+	b.position[2] = b.position[2] + offset[2]
 
 	local bVel = { 0, -1 }
 

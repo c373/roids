@@ -15,7 +15,7 @@ local playerShip = {
 	posVel = { 0, 0 },
 	speed = 10,
 	rotation = 0,
-	rotVel = math.rad( 450 )
+	rotVel = math.rad( 540 )
 }
 
 local boost = 2
@@ -33,7 +33,7 @@ end
 
 function love.load()
 
-	debugInfo = false
+	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -156,6 +156,7 @@ end
 ------------------------------------------------------------
 
 function love.keypressed( key, scancode, isrepeat )
+
 	if key == "escape" then
 	   love.event.quit()
 	end
@@ -165,6 +166,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "j" then
-		bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation )
+		bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation, playerShip.posVel )
 	end
+	
  end
