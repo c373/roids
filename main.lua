@@ -1,6 +1,3 @@
-
-
-
 require "asteroidFactory"
 require "bulletFactory"
 require "utils"
