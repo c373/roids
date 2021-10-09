@@ -119,7 +119,7 @@ function love.draw()
 	end
 
 	for i = 1, #bullets do
-local b = bullets[i]
+		local b = bullets[i]
 		love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation )
 	end
 
