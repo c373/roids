@@ -40,6 +40,6 @@ end
 function bullet:update( dt )
 
 	self.position[1] = self.position[1] + self.vel[1] * self.speed * dt
-	sself.position[2] = self.position[2] + self.vel[2] * self.speed * dt
+	self.position[2] = self.position[2] + self.vel[2] * self.speed * dt
 
 end
