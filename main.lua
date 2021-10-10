@@ -10,14 +10,14 @@ local playerShip = {
 	model = love.graphics.newMesh( { { -10, 10, 0, 0, 1, 1, 1, 1 }, { 10, 10, 0, 0, 1, 1, 1, 1 },  { 0, -20, 0, 0, 1, 1, 1, 1 } }, "fan", "dynamic" ),
 	position = { 0, 0 },
 	posVel = { 0, 0 },
-	speed = 1000,
+	speed = 500,
 	rotation = 0,
 	rotSpeed = math.rad( 540 )
 }
 
 function thurst( dt )
 
-	local newVel = { 0, -1 }
+	local newVel = { 0, -2 }
 	rotate( newVel, playerShip.rotation )
 	playerShip.posVel[1] = playerShip.posVel[1] + ( newVel[1] * dt )
 	playerShip.posVel[2] = playerShip.posVel[2] + ( newVel[2] * dt )

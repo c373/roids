@@ -2,10 +2,15 @@ bullet = {}
 
 bullet.model = love.graphics.newMesh(
 	{
+		{ 0, 0, 0, 0, 1, 1, 1, 1 },
 		{ -2, -2, 0, 0, 1, 1, 1, 1 },
-		{ 2, -2, 0, 0, 1, 1, 1, 1 }, 
+		{ 0, -5, 0, 0, 1, 1, 1, 1 },
+		{ 2, -2, 0, 0, 1, 1, 1, 1 },
 		{ 2, 2, 0, 0, 1, 1, 1, 1 },
-		{ -2, 2, 0, 0, 1, 1, 1, 1 }
+		{ 0, 30, 0, 0, 1, 1, 1, 1 },
+		{ -2, 2, 0, 0, 1, 1, 1, 1 },
+		{ -2, -2, 0, 0, 1, 1, 1, 1 }
+		
 	},
 	"fan",
 	"dynamic"
@@ -13,7 +18,7 @@ bullet.model = love.graphics.newMesh(
 
 bullet.position = { 0, 0 }
 bullet.vel = { 0, -1 }
-bullet.speed = 1000
+bullet.speed = 250
 bullet.rotation = 0
 
 function bullet:new( position, rotation, vel )
@@ -27,8 +32,9 @@ function bullet:new( position, rotation, vel )
 	rotate( offset, rotation )
 
 	b.position = { position[1] + offset[1], position[2] + offset[2] }
-	b.vel = { 0, -1 }
+	b.vel = { 0, -5 }
 	rotate( b.vel, rotation )
+	local v = { vel[1], vel[2] }
 	b.vel[1] = b.vel[1] + vel[1]
 	b.vel[2] = b.vel[2] + vel[2]
 	b.rotation = rotation
