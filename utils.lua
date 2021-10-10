@@ -1,3 +1,9 @@
+function lerp ( s, e, t )
+
+	return s * (1 - t ) + e * t
+
+end
+
 function rotate( vector, a )
 
 	local c = math.cos( a )
@@ -7,6 +13,8 @@ function rotate( vector, a )
 
 	vector[1] = x
 	vector[2] = y
+
+	return { vector[1], vector[2] }
 
 end
 

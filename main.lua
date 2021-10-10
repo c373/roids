@@ -10,21 +10,18 @@ local playerShip = {
 	model = love.graphics.newMesh( { { -10, 10, 0, 0, 1, 1, 1, 1 }, { 10, 10, 0, 0, 1, 1, 1, 1 },  { 0, -20, 0, 0, 1, 1, 1, 1 } }, "fan", "dynamic" ),
 	position = { 0, 0 },
 	posVel = { 0, 0 },
-	speed = 10,
+	speed = 1000,
 	rotation = 0,
-	rotVel = math.rad( 540 )
+	rotSpeed = math.rad( 540 )
 }
 
-local boost = 2
+function thurst( dt )
 
-function thurst( accelSpeed )
+	local newVel = { 0, -1 }
+	rotate( newVel, playerShip.rotation )
+	playerShip.posVel[1] = playerShip.posVel[1] + ( newVel[1] * dt )
+	playerShip.posVel[2] = playerShip.posVel[2] + ( newVel[2] * dt )
 
-	local vel = {  0, -1 * accelSpeed }
-
-	rotate( vel, playerShip.rotation )
-		
-	playerShip.posVel[1] = playerShip.posVel[1] + vel[1]
-	playerShip.posVel[2] = playerShip.posVel[2] + vel[2]
 
 end
 
@@ -71,24 +68,23 @@ function love.update( dt )
 		bullets[i]:update( dt )
 	end
 
-	playerShip.posVel[1] = playerShip.posVel[1] * 0.99
-	playerShip.posVel[2] = playerShip.posVel[2] * 0.99
-
 	if love.keyboard.isDown( "k" ) then
-		
-		thurst( 2 )
-
+		thurst( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
-		playerShip.rotation = playerShip.rotation - playerShip.rotVel * dt
+		playerShip.rotation = playerShip.rotation - playerShip.rotSpeed * dt
 	end
 	if love.keyboard.isDown( "f" ) then
-		playerShip.rotation = playerShip.rotation + playerShip.rotVel * dt
+		playerShip.rotation = playerShip.rotation + playerShip.rotSpeed * dt
 	end
 
 	playerShip.position[1] = playerShip.position[1] + playerShip.posVel[1] * playerShip.speed * dt
 	playerShip.position[2] = playerShip.position[2] + playerShip.posVel[2] * playerShip.speed * dt
+
+	--decay playerShip velocity
+	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
+	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
 	--wrap playerShip.position
 	if playerShip.position[1] > love.graphics.getWidth() then
