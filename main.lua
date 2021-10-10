@@ -30,7 +30,7 @@ end
 
 function love.load()
 
-	debugInfo = true
+	debugInfo = false
 
 	if debugInfo then
 		love.frame = 0
@@ -67,8 +67,11 @@ function love.update( dt )
 
 	end
 
-	for i = 1, #bullets do
+	for i = #bullets, 1, -1 do
 		bullets[i]:update( dt )
+		if ( bullets[i].position[1] < 0 or bullets[i].position[1] > love.graphics.getWidth() ) or ( bullets[i].position[2] < 0 or bullets[i].position[2] > love.graphics.getHeight() ) then
+			table.remove( bullets, i )
+		end
 	end
 
 	playerShip.posVel[1] = playerShip.posVel[1] * 0.99
@@ -112,6 +115,10 @@ end
 function love.draw()
 
 	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+
+	love.graphics.setWireframe( false )
+	love.graphics.print( "posx:"..playerShip.posVel[1].."posy:"..playerShip.posVel[2].."#bullets:"..#bullets )
+	love.graphics.setWireframe( true )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -163,7 +170,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "j" then
-		bullets[#bullets + 1] = createBullet( playerShip.position, playerShip.rotation, playerShip.posVel )
+		bullets[#bullets + 1] = bullet:createBullet( playerShip.position, playerShip.rotation, playerShip.posVel )
 	end
 	
  end

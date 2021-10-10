@@ -15,3 +15,5 @@ P R O C E D U R A L    C R E A T I O N    O F    A S T E R O I D S
 			the center or, using a ray derivitive of the projectile's velocity, generate a new vertex along the ray with some deviation and about midway between the intial vertex
 			and the final vertex which is the vertex nearest the collision of the ray on the far side of the asteroid, the second collision on the polygon as the ray exits
 			- or just create two smaller asteroids of abritary shapes
+
+BULLETS NOT WORKING... OBJECT INSTATIATION NOT WORKIKNG AS INTENDED

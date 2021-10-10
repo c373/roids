@@ -20,8 +20,8 @@ function createAsteroid()
 	a.rotation = 0
 	a.rotVel = 1
 	
-
 	return a
+	
 end
 
 function newAsteroidVertices( radiusRange )
