@@ -7,7 +7,15 @@ local asteroids = {}
 local bullets = {}
 
 local playerShip = {
-	model = love.graphics.newMesh( { { -10, 10, 0, 0, 1, 1, 1, 1 }, { 10, 10, 0, 0, 1, 1, 1, 1 },  { 0, -20, 0, 0, 1, 1, 1, 1 } }, "fan", "dynamic" ),
+	model = love.graphics.newMesh(
+		{ 
+			{ -10, 10, 0, 0, 1, 1, 1, 1 },
+			{ 10, 10, 0, 0, 1, 1, 1, 1 }, 
+			{ 0, -20, 0, 0, 1, 1, 1, 1 }
+		},
+		"fan",
+		"dynamic"
+	),
 	position = { 0, 0 },
 	posVel = { 0, 0 },
 	speed = 500,
@@ -81,8 +89,8 @@ function love.update( dt )
 	playerShip.position[2] = playerShip.position[2] + playerShip.posVel[2] * playerShip.speed * dt
 
 	--decay playerShip velocity
-	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.25 )
-	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.25 )
+	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
+	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
 	--wrap playerShip.position
 	if playerShip.position[1] > love.graphics.getWidth() then
@@ -137,7 +145,7 @@ function love.draw()
 
 		love.graphics.setWireframe( false )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "velx:"..playerShip.posVel[1].." vely:"..playerShip.posVel[2].." #bullets:"..#bullets.." #asteroids: "..#asteroids, 0, 450 )
+		love.graphics.print( "velx:"..playerShip.posVel[1].."\nvely:"..playerShip.posVel[2].."\n#bullets:"..#bullets.."\n#asteroids: "..#asteroids, 0, 450 )
 		love.graphics.setWireframe( true )
 	end
 
