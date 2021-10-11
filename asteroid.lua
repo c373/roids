@@ -1,27 +1,26 @@
-asteroid = {
-	model = {},
-	position = nil,
-	posVel = nil,
-	rotation = nil,
-	rotVel = nil
-}
+asteroid = {}
 
-asteroid.__index = asteroid
+asteroid.model = {}
+asteroid.position = { 0, 0 }
+asteroid.posVel = { 0, 0 }
+asteroid.rotation = 0
+asteroid.rotVel = 0
 
-function createAsteroid()
+function asteroid:new( x, y )
 
 	local a = {}
 
+	self.__index = self
 	setmetatable( a, asteroid )
 
 	a.model = love.graphics.newMesh( vertexListToVertexColorList( newAsteroidVertices( { min = 15, max = 30 } ) ), "fan", "dynamic" )
-	a.position = { 0, 0 }
-	a.posVel = { 200, 200 }
-	a.rotation = 0
-	a.rotVel = 1
-	
+	a.position = { math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) }
+	a.posVel = { math.random( -200, 200 ), math.random( -200, 200 ) }
+	a.rotation = math.random( 0, 6.28 )
+	a.rotVel = math.random( 0, 3.14 )
+
 	return a
-	
+
 end
 
 function newAsteroidVertices( radiusRange )

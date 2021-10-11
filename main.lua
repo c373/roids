@@ -1,4 +1,4 @@
-require "asteroidFactory"
+require "asteroid"
 require "bullet"
 require "utils"
 
@@ -22,7 +22,6 @@ function thurst( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] + ( newVel[1] * dt )
 	playerShip.posVel[2] = playerShip.posVel[2] + ( newVel[2] * dt )
 
-
 end
 
 function love.load()
@@ -35,7 +34,7 @@ function love.load()
 		love.profiler.start()
 	end
 
-	asteroids[#asteroids + 1] = createAsteroid()
+	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 
 	love.graphics.setWireframe( true )
 
@@ -159,7 +158,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "return" then
-		asteroids[#asteroids + 1] = createAsteroid()
+		asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 	end
 
 	if key == "j" then
