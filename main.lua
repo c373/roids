@@ -47,11 +47,12 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
 	buffer = love.graphics.newCanvas( 1280, 800 )
-	bufferQ = love.graphics.newQuad( 0, 0, 1280, 800, 1280, 800 )
+	bufferQ = love.graphics.newQuad( 100, 100, 1080, 600, 1280, 800 )
 
-	scale = love.graphics.getHeight() / 800
-	screenx = ( love.graphics.getWidth() - ( 1280 * scale ) ) / 2
-	screeny = ( love.graphics.getHeight() - ( 800 * scale ) ) / 2
+	scale = love.graphics.getWidth() / 1080
+	--scale = 1
+	screenx = ( love.graphics.getWidth() - ( 1080 * scale ) ) / 2
+	screeny = ( love.graphics.getHeight() - ( 600 * scale ) ) / 2
 
 end
 
@@ -98,6 +99,17 @@ function love.update( dt )
 	--decay playerShip velocity
 	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
 	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
+
+	if playerShip.position[1] < 100 then
+		playerShip.position[1] = 1180
+	elseif playerShip.position[1] > 1180 then
+		playerShip.position[1] = 100
+	end
+	if playerShip.position[2] < 100 then
+		playerShip.position[2] = 700
+	elseif playerShip.position[2] > 700 then
+		playerShip.position[2] = 100
+	end
 
 end
 
