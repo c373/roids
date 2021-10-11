@@ -15,7 +15,7 @@ local playerShip = {
 	rotSpeed = math.rad( 540 )
 }
 
-function thurst( dt )
+function thrust( dt )
 
 	local newVel = { 0, -2 }
 	rotate( newVel, playerShip.rotation )
@@ -69,7 +69,7 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "k" ) then
-		thurst( dt )
+		thrust( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
