@@ -3,8 +3,10 @@ asteroid = {}
 asteroid.model = {}
 asteroid.position = { 0, 0 }
 asteroid.posVel = { 0, 0 }
+asteroid.speed = 0
 asteroid.rotation = 0
 asteroid.rotVel = 0
+asteroid.bounds = 0
 
 function asteroid:new( x, y )
 
@@ -15,11 +17,21 @@ function asteroid:new( x, y )
 
 	a.model = love.graphics.newMesh( vertexListToVertexColorList( newAsteroidVertices( { min = 15, max = 30 } ) ), "fan", "dynamic" )
 	a.position = { math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) }
-	a.posVel = { math.random( -200, 200 ), math.random( -200, 200 ) }
+	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
+	a.speed = math.random( 0, 300 )
 	a.rotation = math.random( 0, 6.28 )
 	a.rotVel = math.random( 0, 3.14 )
+	a.bounds = 30
 
 	return a
+
+end
+
+function asteroid:update( dt )
+
+	self.position[1] = self.position[1] + self.posVel[1] * self.speed * dt
+	self.position[2] = self.position[2] + self.posVel[2] * self.speed * dt
+	self.rotation = self.rotation + self.rotVel * dt
 
 end
 
