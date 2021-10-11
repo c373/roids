@@ -1,4 +1,4 @@
-require "asteroidFactory"
+require "asteroid"
 require "bullet"
 require "utils"
 
@@ -12,7 +12,7 @@ local playerShip = {
 	posVel = { 0, 0 },
 	speed = 500,
 	rotation = 0,
-	rotSpeed = math.rad( 540 )
+	rotSpeed = math.rad( 450 )
 }
 
 function thrust( dt )
@@ -22,12 +22,11 @@ function thrust( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] + ( newVel[1] * dt )
 	playerShip.posVel[2] = playerShip.posVel[2] + ( newVel[2] * dt )
 
-
 end
 
 function love.load()
 
-	debugInfo = false
+	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -35,7 +34,7 @@ function love.load()
 		love.profiler.start()
 	end
 
-	asteroids[#asteroids + 1] = createAsteroid()
+	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 
 	love.graphics.setWireframe( true )
 
@@ -56,12 +55,11 @@ function love.update( dt )
 		end
 	end
 
-	for i = 1, #asteroids do
-		
-		asteroids[i].position[1] = asteroids[i].position[1] + asteroids[i].posVel[1] * dt
-		asteroids[i].position[2] = asteroids[i].position[2] + asteroids[i].posVel[2] * dt
-		asteroids[i].rotation = asteroids[i].rotation + asteroids[i].rotVel * dt
-
+	for i = #asteroids, 1, -1 do
+		asteroids[i]:update( dt )
+		if asteroids[i].position[1] < -asteroids[i].bounds or asteroids[i].position[2] < -asteroids[i].bounds or asteroids[i].position[1] > love.graphics.getWidth() + asteroids[i].bounds or asteroids[i].position[2] > love.graphics.getHeight() + asteroids[i].bounds then
+			table.remove( asteroids, i )
+		end
 	end
 
 	for i = #bullets, 1, -1 do
@@ -83,8 +81,8 @@ function love.update( dt )
 	playerShip.position[2] = playerShip.position[2] + playerShip.posVel[2] * playerShip.speed * dt
 
 	--decay playerShip velocity
-	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
-	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
+	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.25 )
+	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.25 )
 
 	--wrap playerShip.position
 	if playerShip.position[1] > love.graphics.getWidth() then
@@ -108,10 +106,6 @@ end
 function love.draw()
 
 	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
-
-	love.graphics.setWireframe( false )
-	love.graphics.print( "velx:"..playerShip.posVel[1].."vely:"..playerShip.posVel[2].."#bullets:"..#bullets )
-	love.graphics.setWireframe( true )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -143,6 +137,7 @@ function love.draw()
 
 		love.graphics.setWireframe( false )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
+		love.graphics.print( "velx:"..playerShip.posVel[1].." vely:"..playerShip.posVel[2].." #bullets:"..#bullets.." #asteroids: "..#asteroids, 0, 450 )
 		love.graphics.setWireframe( true )
 	end
 
@@ -159,7 +154,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "return" then
-		asteroids[#asteroids + 1] = createAsteroid()
+		asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 	end
 
 	if key == "j" then

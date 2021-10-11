@@ -16,4 +16,14 @@ P R O C E D U R A L    C R E A T I O N    O F    A S T E R O I D S
 			and the final vertex which is the vertex nearest the collision of the ray on the far side of the asteroid, the second collision on the polygon as the ray exits
 			- or just create two smaller asteroids of abritary shapes
 
-BULLETS NOT WORKING... OBJECT INSTATIATION NOT WORKIKNG AS INTENDED
+E F F I C I E N T    A S T E R O I D    D E S T R U C T I O N    A N D    C R E A T I O NOT
+
+	- avoid using table.remove()S as it is a costly method
+	- instead have two tables one with all the asteroid objects and the other with a list of dead asteroids
+	- when an asteroid is destroyed mark it as dead and available for the next time we need to create an asteroid
+	- 
+
+T H E    P O W E R    O F    M E S H E s
+
+	- use the power of meshes to render all eight copies of each object...
+	- create all copies of objects in one mesh to render all at once as a list of triangles
