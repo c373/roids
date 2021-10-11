@@ -36,7 +36,7 @@ T H E    P O W E R    O F    S H A D E R S
         - here's the basic idea, create a canvas, off render target, where you'll draw all the game objects to
         - now we're only going to draw a portion of the canvas to the screen as the entire playable area with a pre generated quad
         - the reason is that now we can use a custom pixel shader to wrap all graphics when the renderer attempts to draw something outside of the quad we are using for the world view
-        - this way we will have a section of the canvas all the way around that which upon drawing to will automatically drawn to the opposite side of the screen offset by position
+        - this way we will have a section of the canvas all the way around that which upon drawing to will automatically draw to the opposite side of the screen offset by position
         - naturally to ensure we can see all game objects at any given time we will wrap all objects positions according to the dimensions of the world view quad
         - this solves the issue of having objects abruptly teleport to the other side of the screen when out of bounds
         - the pixel shader will ensure that as the object passes out of bounds it's graphics are smoothly wrapped to the other side of the screen
