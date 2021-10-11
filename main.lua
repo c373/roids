@@ -44,7 +44,14 @@ function love.load()
 
 	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 
-	love.graphics.setWireframe( true )
+	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
+
+	buffer = love.graphics.newCanvas( 1280, 800 )
+	bufferQ = love.graphics.newQuad( 0, 0, 1280, 800, 1280, 800 )
+
+	scale = love.graphics.getHeight() / 800
+	screenx = ( love.graphics.getWidth() - ( 1280 * scale ) ) / 2
+	screeny = ( love.graphics.getHeight() - ( 800 * scale ) ) / 2
 
 end
 
@@ -92,19 +99,6 @@ function love.update( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
 	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
-	--wrap playerShip.position
-	if playerShip.position[1] > love.graphics.getWidth() then
-		playerShip.position[1] = 0
-	elseif playerShip.position[1] < 0 then
-		playerShip.position[1] = love.graphics.getWidth()
-	end
-
-	if playerShip.position[2] > love.graphics.getHeight() then
-		playerShip.position[2] = 0
-	elseif playerShip.position[2] < 0 then
-		playerShip.position[2] = love.graphics.getHeight()
-	end
-
 end
 
 ------------------------------------------------------------
@@ -112,6 +106,10 @@ end
 ------------------------------------------------------------
 
 function love.draw()
+
+	love.graphics.setCanvas( buffer )
+
+	love.graphics.setWireframe( true )
 
 	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
 
@@ -128,25 +126,17 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
 
-	--draw 8 additional ships to smoothly render wrap transitions
-	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2], playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2], playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
-
-	--corners
-	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1] + love.graphics.getWidth(), playerShip.position[2] - love.graphics.getHeight(), playerShip.rotation )
-	love.graphics.draw( playerShip.model, playerShip.position[1] - love.graphics.getWidth(), playerShip.position[2] + love.graphics.getHeight(), playerShip.rotation )
 	
+	love.graphics.setCanvas()
+
+	love.graphics.setWireframe( false )
+
+	love.graphics.draw( buffer, bufferQ, screenx, screeny, 0, scale )
+
 	if debugInfo then
 		love.graphics.line( playerShip.position[1], playerShip.position[2], playerShip.position[1] + playerShip.posVel[1], playerShip.position[2] + playerShip.posVel[2] )
-
-		love.graphics.setWireframe( false )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "velx:"..playerShip.posVel[1].."\nvely:"..playerShip.posVel[2].."\n#bullets:"..#bullets.."\n#asteroids: "..#asteroids, 0, 450 )
-		love.graphics.setWireframe( true )
+		love.graphics.print( "velx:"..playerShip.posVel[1].."\nvely:"..playerShip.posVel[2].."\n#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..playerShip.position[1].."\ny: "..playerShip.position[2], 0, 450 )
 	end
 
 end
