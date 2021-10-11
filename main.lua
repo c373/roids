@@ -49,8 +49,8 @@ function love.load()
 	buffer = love.graphics.newCanvas( 1280, 800 )
 	bufferQ = love.graphics.newQuad( 100, 100, 1080, 600, 1280, 800 )
 
-	scale = love.graphics.getWidth() / 1080
-	--scale = 1
+	--scale = love.graphics.getWidth() / 1080
+	scale = 1
 	screenx = ( love.graphics.getWidth() - ( 1080 * scale ) ) / 2
 	screeny = ( love.graphics.getHeight() - ( 600 * scale ) ) / 2
 
