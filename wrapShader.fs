@@ -1,15 +1,15 @@
-extern int worldWidth;
-extern int worldHeight;
-varying vec4 vpos;
+extern number screenWidth;
 
 vec4 position( mat4 transform_projection, vec4 vertex_position )
 {
-	if ( vpos.x < 100 || vpos.x > worldWidth )
+	if( vertex_position.x < 100 )
 	{
-
+		vertex_position.x = screenWidth;
+	}
+	else if( vertex_position.x > screenWidth )
+	{
+		vertex_position.x = 100;
 	}
 
-	vpos = vertex_position;
-
-	return vec4( transform_projection * vpos );
+	return vec4( transform_projection * vertex_position );
 }

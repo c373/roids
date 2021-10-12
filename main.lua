@@ -58,9 +58,7 @@ function love.load()
 	screeny = ( love.graphics.getHeight() - ( worldHeight * scale ) ) / 2
 
 	wrapShader = love.graphics.newShader( "wrapShader.fs" )
-	wrapShader:send( "worldWidth", worldWidth )
-	wrapShader:send( "worldHeight", worldHeight )
-	love.graphics.setShader( wrapShader )
+	wrapShader:send( "screenWidth", 1080 )  
 
 end
 
@@ -129,6 +127,8 @@ function love.draw()
 
 	love.graphics.setCanvas( buffer )
 
+	love.graphics.setShader( wrapShader )
+
 	love.graphics.setWireframe( true )
 
 	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
@@ -146,6 +146,7 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
 
+	love.graphics.setShader()
 	
 	love.graphics.setCanvas()
 
