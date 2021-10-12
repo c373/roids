@@ -12,15 +12,15 @@ local playerShip = {
 	posVel = { 0, 0 },
 	speed = 500,
 	rotation = 0,
-	rotSpeed = math.rad( 450 )
+	rotSpeed = math.rad( 360 )
 }
 
 function thrust( dt )
 
 	local newVel = { 0, -2 }
 	rotate( newVel, playerShip.rotation )
-	playerShip.posVel[1] = playerShip.posVel[1] + ( newVel[1] * dt )
-	playerShip.posVel[2] = playerShip.posVel[2] + ( newVel[2] * dt )
+	playerShip.posVel[1] = playerShip.posVel[1] + newVel[1] * dt
+	playerShip.posVel[2] = playerShip.posVel[2] + newVel[2] * dt
 
 end
 
@@ -81,8 +81,8 @@ function love.update( dt )
 	playerShip.position[2] = playerShip.position[2] + playerShip.posVel[2] * playerShip.speed * dt
 
 	--decay playerShip velocity
-	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.25 )
-	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.25 )
+	playerShip.posVel[1] = playerShip.posVel[1] - playerShip.posVel[1] * dt * 0.25
+	playerShip.posVel[2] = playerShip.posVel[2] - playerShip.posVel[2] * dt * 0.25
 
 	--wrap playerShip.position
 	if playerShip.position[1] > love.graphics.getWidth() then
