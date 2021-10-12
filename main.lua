@@ -34,7 +34,7 @@ end
 
 function love.load()
 
-	debugInfo = true
+	debugInfo = false
 
 	if debugInfo then
 		love.frame = 0
@@ -46,13 +46,21 @@ function love.load()
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
-	buffer = love.graphics.newCanvas( 1280, 800 )
-	bufferQ = love.graphics.newQuad( 100, 100, 1080, 600, 1280, 800 )
+	worldWidth = 1080
+	worldHeight = 600
+	
+	buffer = love.graphics.newCanvas( worldWidth + 200, worldHeight + 200 )
+	bufferQ = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, worldWidth + 200, worldHeight + 200 )
 
 	--scale = love.graphics.getWidth() / 1080
 	scale = 1
-	screenx = ( love.graphics.getWidth() - ( 1080 * scale ) ) / 2
-	screeny = ( love.graphics.getHeight() - ( 600 * scale ) ) / 2
+	screenx = ( love.graphics.getWidth() - ( worldWidth * scale ) ) / 2
+	screeny = ( love.graphics.getHeight() - ( worldHeight * scale ) ) / 2
+
+	wrapShader = love.graphics.newShader( "wrapShader.fs" )
+	wrapShader:send( "worldWidth", worldWidth )
+	wrapShader:send( "worldHeight", worldHeight )
+	love.graphics.setShader( wrapShader )
 
 end
 
@@ -101,13 +109,13 @@ function love.update( dt )
 	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
 	if playerShip.position[1] < 100 then
-		playerShip.position[1] = 1180
-	elseif playerShip.position[1] > 1180 then
+		playerShip.position[1] = worldWidth + 100
+	elseif playerShip.position[1] > worldWidth + 100 then
 		playerShip.position[1] = 100
 	end
 	if playerShip.position[2] < 100 then
-		playerShip.position[2] = 700
-	elseif playerShip.position[2] > 700 then
+		playerShip.position[2] = worldHeight + 100
+	elseif playerShip.position[2] > worldHeight + 100 then
 		playerShip.position[2] = 100
 	end
 
