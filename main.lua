@@ -46,19 +46,18 @@ function love.load()
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
-	worldWidth = 1080
-	worldHeight = 600
+	worldWidth = 1024
+	worldHeight = 576
 	
 	buffer = love.graphics.newCanvas( worldWidth + 200, worldHeight + 200 )
+	buffer:setWrap( "repeat", "repeat" )
 	bufferQ = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, worldWidth + 200, worldHeight + 200 )
 
-	--scale = love.graphics.getWidth() / 1080
+	scale = love.graphics.getWidth() / worldWidth
+	scale = love.graphics.getHeight() / worldHeight
 	scale = 1
 	screenx = ( love.graphics.getWidth() - ( worldWidth * scale ) ) / 2
 	screeny = ( love.graphics.getHeight() - ( worldHeight * scale ) ) / 2
-
-	wrapShader = love.graphics.newShader( "wrapShader.fs" )
-	wrapShader:send( "screenWidth", 1080 )  
 
 end
 
@@ -127,8 +126,6 @@ function love.draw()
 
 	love.graphics.setCanvas( buffer )
 
-	love.graphics.setShader( wrapShader )
-
 	love.graphics.setWireframe( true )
 
 	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
@@ -145,8 +142,6 @@ function love.draw()
 
 	--main ship model
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
-
-	love.graphics.setShader()
 	
 	love.graphics.setCanvas()
 
