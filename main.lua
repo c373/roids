@@ -51,7 +51,8 @@ function love.load()
 	
 	buffer = love.graphics.newCanvas( worldWidth + 200, worldHeight + 200 )
 	buffer:setWrap( "repeat", "repeat" )
-	bufferQ = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, worldWidth + 200, worldHeight + 200 )
+	--bufferQ = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, worldWidth + 200, worldHeight + 200 )
+	bufferQ = love.graphics.newQuad( 0, 0, love.graphics.getWidth(), love.graphics.getHeight(), worldWidth + 200, worldHeight + 200 )
 
 	scale = love.graphics.getWidth() / worldWidth
 	scale = love.graphics.getHeight() / worldHeight
@@ -147,7 +148,8 @@ function love.draw()
 
 	love.graphics.setWireframe( false )
 
-	love.graphics.draw( buffer, bufferQ, screenx, screeny, 0, scale )
+	--love.graphics.draw( buffer, bufferQ, screenx, screeny, 0, scale )
+	love.graphics.draw( buffer, bufferQ, 0, 0, 0, scale )
 
 	if debugInfo then
 		love.graphics.line( playerShip.position[1], playerShip.position[2], playerShip.position[1] + playerShip.posVel[1], playerShip.position[2] + playerShip.posVel[2] )
