@@ -1,9 +1,3 @@
-function lerp ( s, e, t )
-
-	return s * (1 - t ) + e * t
-
-end
-
 function rotate( vector, a )
 
 	local c = math.cos( a )
@@ -34,12 +28,6 @@ function wrapPosition( vector, xMIN, xMAX, yMIN, yMAX )
 
 end
 
-function normalize( vector )
-	local mag = math.sqrt( vector[1] * vector[1] + vector[2] * vector[2] )
-	vector[1] = vector[1] / mag
-	vector[2] = vector[2] / mag
-end
-
 function vertexListToVertexColorList( vertices )
 
 	local vertexColorList = {}
@@ -49,21 +37,5 @@ function vertexListToVertexColorList( vertices )
 	end
 
 	return vertexColorList
-
-end
-
-function vertexListToWireMesh( vertices )
-
-end
-
-function verticesInBounds( vertices, bounds )
-
-	for i = 1, #vertices, 2 do
-		if vertices[i] > bounds.left and vertices[i] < bounds.right and vertices[i + 1] > bounds.top and vertices[i + 1] < bounds.bottom then
-			return true
-		end
-	end
-
-	return false
 
 end
