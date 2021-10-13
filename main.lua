@@ -34,7 +34,7 @@ end
 
 function love.load()
 
-	debugInfo = false
+	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -46,14 +46,27 @@ function love.load()
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
-	worldWidth = 1024
-	worldHeight = 576
+	worldWidth = 1280
+	worldHeight = 800
+	canvasWidth = worldWidth + 200
+	canvasHeight = worldHeight + 200
 	
-	buffer = love.graphics.newCanvas( worldWidth + 200, worldHeight + 200 )
-	buffer:setWrap( "repeat", "repeat" )
-	bufferQ = love.graphics.newQuad( 0, 0, love.graphics.getWidth(), love.graphics.getHeight(), worldWidth + 200, worldHeight + 200 )
-	
-	scale = 1
+	buffer = love.graphics.newCanvas( canvasWidth, canvasHeight )
+	buffer_x = ( love.graphics.getWidth() - worldWidth - 200 ) * 0.5
+	buffer_y = ( love.graphics.getHeight() - worldHeight - 200 ) * 0.5
+
+	viewport = love.graphics.newQuad( 100, 100, worldWidth + 100, worldHeight + 100, canvasWidth, canvasHeight )
+
+	wrapZones = {
+		topLeft = love.graphics.newQuad( 0, 0, 100, 100, canvasWidth, canvasHeight ),
+		top = love.graphics.newQuad( 100, 0, worldWidth, 100, canvasWidth, canvasHeight ),
+		topRight = love.graphics.newQuad( worldWidth + 100, 0, 100, 100, canvasWidth, canvasHeight ),
+		left = love.graphics.newQuad( 0, 100, 100, worldHeight, canvasWidth, canvasHeight ),
+		right = love.graphics.newQuad( worldWidth + 100, 100, 100, worldHeight, canvasWidth, canvasHeight ),
+		bottomLeft = love.graphics.newQuad( 0, worldHeight + 100, 100, 100, canvasWidth, canvasHeight ),
+		bottom = love.graphics.newQuad( 100, worldHeight + 100, worldWidth, 100, canvasWidth, canvasHeight ),
+		bottomRight = love.graphics.newQuad( worldWidth + 100, worldHeight + 100, 100, 100, canvasWidth, canvasHeight )
+	}
 
 end
 
@@ -101,16 +114,7 @@ function love.update( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
 	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
-	if playerShip.position[1] < 100 then
-		playerShip.position[1] = worldWidth + 100
-	elseif playerShip.position[1] > worldWidth + 100 then
-		playerShip.position[1] = 100
-	end
-	if playerShip.position[2] < 100 then
-		playerShip.position[2] = worldHeight + 100
-	elseif playerShip.position[2] > worldHeight + 100 then
-		playerShip.position[2] = 100
-	end
+	wrapPosition( playerShip.position, 100, worldWidth + 100, 100, worldHeight + 100 )
 
 end
 
@@ -120,11 +124,13 @@ end
 
 function love.draw()
 
+	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+
 	love.graphics.setCanvas( buffer )
 
-	love.graphics.setWireframe( true )
+	love.graphics.clear( 1, 1, 1, 0 )
 
-	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+	love.graphics.setWireframe( true )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -143,12 +149,26 @@ function love.draw()
 
 	love.graphics.setWireframe( false )
 
-	love.graphics.draw( buffer, bufferQ, 0, 0, 0, scale )
+	--draw main canvas
+	love.graphics.draw( buffer, buffer_x, buffer_y, 0, scale )
+
+	--draw the 8 wrapzones
+	love.graphics.draw( buffer, wrapZones.topLeft, buffer_x + worldWidth, buffer_y + worldHeight ) --topLeft
+	love.graphics.draw( buffer, wrapZones.top, buffer_x + 100, buffer_y + worldHeight ) --top
+	love.graphics.draw( buffer, wrapZones.topRight, buffer_x + 100, buffer_y + worldHeight ) --topRight
+	love.graphics.draw( buffer, wrapZones.left, buffer_x + worldWidth, buffer_y + 100 ) --left
+	love.graphics.draw( buffer, wrapZones.right, buffer_x + 100, buffer_y + 100 ) --right
+	love.graphics.draw( buffer, wrapZones.bottomLeft, buffer_x + worldWidth, buffer_y + 100 ) --bottomLeft
+	love.graphics.draw( buffer, wrapZones.bottom, buffer_x + 100, buffer_y + 100 ) --bottom
+	love.graphics.draw( buffer, wrapZones.bottomRight, buffer_x + 100, buffer_y + 100 ) --bottomRight
+
+	love.graphics.rectangle( "line", buffer_x + 100, buffer_y + 100, buffer:getWidth() - 200, buffer:getHeight() - 200 )
+	love.graphics.rectangle( "line", buffer_x, buffer_y, buffer:getWidth(), buffer:getHeight() )
 
 	if debugInfo then
-		love.graphics.line( playerShip.position[1], playerShip.position[2], playerShip.position[1] + playerShip.posVel[1], playerShip.position[2] + playerShip.posVel[2] )
+		love.graphics.line( playerShip.position[1] + buffer_x, playerShip.position[2] + buffer_y, playerShip.position[1] + buffer_x + playerShip.posVel[1], playerShip.position[2] + buffer_y + playerShip.posVel[2] )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "velx:"..playerShip.posVel[1].."\nvely:"..playerShip.posVel[2].."\n#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..playerShip.position[1].."\ny: "..playerShip.position[2], 0, 450 )
+		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..playerShip.position[1].."\ny: "..playerShip.position[2], 0, 450 )
 	end
 
 end
