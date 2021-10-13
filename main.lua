@@ -34,7 +34,7 @@ end
 
 function love.load()
 
-	debugInfo = true
+	debugInfo = false
 
 	if debugInfo then
 		love.frame = 0
@@ -87,13 +87,12 @@ function love.update( dt )
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
-		if asteroids[i].position[1] < -asteroids[i].bounds or asteroids[i].position[2] < -asteroids[i].bounds or asteroids[i].position[1] > love.graphics.getWidth() + asteroids[i].bounds or asteroids[i].position[2] > love.graphics.getHeight() + asteroids[i].bounds then
-			table.remove( asteroids, i )
-		end
+		wrapPosition( asteroids[i].position, 100, worldWidth + 100, 100, worldHeight + 100 )
 	end
 
 	for i = #bullets, 1, -1 do
 		bullets[i]:update( dt )
+		wrapPosition( bullets[i].position, 100, worldWidth + 100, 100, worldHeight + 100 )
 	end
 
 	if love.keyboard.isDown( "k" ) then
