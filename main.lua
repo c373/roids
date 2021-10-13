@@ -46,8 +46,8 @@ function love.load()
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
-	worldWidth = 1280
-	worldHeight = 800
+	worldWidth = 800
+	worldHeight = 600
 	canvasWidth = worldWidth + 200
 	canvasHeight = worldHeight + 200
 	
@@ -55,7 +55,7 @@ function love.load()
 	buffer_x = ( love.graphics.getWidth() - worldWidth - 200 ) * 0.5
 	buffer_y = ( love.graphics.getHeight() - worldHeight - 200 ) * 0.5
 
-	viewport = love.graphics.newQuad( 100, 100, worldWidth + 100, worldHeight + 100, canvasWidth, canvasHeight )
+	viewport = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, canvasWidth, canvasHeight )
 
 	wrapZones = {
 		topLeft = love.graphics.newQuad( 0, 0, 100, 100, canvasWidth, canvasHeight ),
@@ -149,7 +149,7 @@ function love.draw()
 	love.graphics.setWireframe( false )
 
 	--draw main canvas
-	love.graphics.draw( buffer, buffer_x, buffer_y, 0, scale )
+	love.graphics.draw( buffer, viewport, buffer_x + 100, buffer_y + 100 )
 
 	--draw the 8 wrapzones
 	love.graphics.draw( buffer, wrapZones.topLeft, buffer_x + worldWidth, buffer_y + worldHeight ) --topLeft
