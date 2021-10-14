@@ -3,7 +3,10 @@ bullet = {
 	position = { 0, 0 },
 	vel = { 0, -1 },
 	speed = 250,
-	rotation = 0
+	rotation = 0,
+	alive = false,
+	time = 0,
+	lifespan = 0.75
 }
 
 function bullet:new( model, position, rotation, vel )
@@ -24,12 +27,20 @@ function bullet:new( model, position, rotation, vel )
 	b.vel[1] = b.vel[1] + vel[1]
 	b.vel[2] = b.vel[2] + vel[2]
 	b.rotation = rotation
+	b.alive = true
+	b.time = 0
 
 	return b
 
 end
 
 function bullet:update( dt )
+
+	self.time = self.time + dt
+
+	if self.time > self.lifespan then
+		self.alive = false
+	end
 
 	self.position[1] = self.position[1] + self.vel[1] * self.speed * dt
 	self.position[2] = self.position[2] + self.vel[2] * self.speed * dt

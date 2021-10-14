@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	debugInfo = true
+	debugInfo = false
 
 	if debugInfo then
 		love.frame = 0
@@ -85,8 +85,10 @@ function love.update( dt )
 	end
 
 	for i = #bullets, 1, -1 do
-		bullets[i]:update( dt )
-		wrapPosition( bullets[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+		if bullets[i].alive then
+			bullets[i]:update( dt )
+			wrapPosition( bullets[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+		end
 	end
 
 	if love.keyboard.isDown( "k" ) then
@@ -124,8 +126,10 @@ function love.draw()
 	end
 
 	for i = 1, #bullets do
-		local b = bullets[i]
-		love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation )
+		if bullets[i].alive then
+			local b = bullets[i]
+			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation, 1 - ( b.time / b.lifespan ) )
+		end
 	end
 
 	--main ship model
