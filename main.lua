@@ -1,36 +1,14 @@
 require "asteroid"
+require "ship"
 require "bullet"
+require "models"
 require "utils"
 
 local asteroids = {}
 
 local bullets = {}
 
-local playerShip = {
-	model = love.graphics.newMesh(
-		{ 
-			{ -10, 10, 0, 0, 1, 1, 1, 1 },
-			{ 10, 10, 0, 0, 1, 1, 1, 1 }, 
-			{ 0, -20, 0, 0, 1, 1, 1, 1 }
-		},
-		"fan",
-		"dynamic"
-	),
-	position = { 0, 0 },
-	posVel = { 0, 0 },
-	speed = 500,
-	rotation = 0,
-	rotSpeed = math.rad( 360 )
-}
-
-function thrust( dt )
-
-	local newVel = { 0, -2 }
-	rotate( newVel, playerShip.rotation )
-	playerShip.posVel[1] = playerShip.posVel[1] + newVel[1] * dt
-	playerShip.posVel[2] = playerShip.posVel[2] + newVel[2] * dt
-
-end
+local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
@@ -112,24 +90,19 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "k" ) then
-		thrust( dt )
+		player:accel( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
-		playerShip.rotation = playerShip.rotation - playerShip.rotSpeed * dt
+		player:rotate( "left", dt )
 	end
+
 	if love.keyboard.isDown( "f" ) then
-		playerShip.rotation = playerShip.rotation + playerShip.rotSpeed * dt
+		player:rotate( "right", dt )
 	end
 
-	playerShip.position[1] = playerShip.position[1] + playerShip.posVel[1] * playerShip.speed * dt
-	playerShip.position[2] = playerShip.position[2] + playerShip.posVel[2] * playerShip.speed * dt
-
-	--decay playerShip velocity
-	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
-	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
-
-	wrapPosition( playerShip.position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+	player:update( dt )
+	wrapPosition( player.position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
 
 end
 
@@ -156,7 +129,7 @@ function love.draw()
 	end
 
 	--main ship model
-	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
+	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 	
 	love.graphics.setWireframe( false )
 
@@ -184,9 +157,9 @@ function love.draw()
 	love.graphics.draw( final, finalXOffset, finalYOffset, 0, finalScale )
 
 	if debugInfo then
-		love.graphics.line( ( playerShip.position[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( playerShip.position[2] - wrapBufferOffset ) * finalScale + finalYOffset, ( playerShip.position[1] + 20 * playerShip.posVel[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( playerShip.position[2] + 20 * playerShip.posVel[2] - wrapBufferOffset ) * finalScale + finalYOffset )
+		love.graphics.line( ( player.position[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] - wrapBufferOffset ) * finalScale + finalYOffset, ( player.position[1] + 20 * player.velocity[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] + 20 * player.velocity[2] - wrapBufferOffset ) * finalScale + finalYOffset )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..playerShip.position[1].."\ny: "..playerShip.position[2], 0, 450 )
+		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
 	end
 
 end
@@ -206,7 +179,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "j" then
-		bullets[#bullets + 1] = bullet:new( playerShip.position, playerShip.rotation, playerShip.posVel )
+		bullets[#bullets + 1] = bullet:new( models.bullet, player.position, player.rotation, player.velocity )
 	end
 	
  end

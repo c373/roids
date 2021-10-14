@@ -12,6 +12,18 @@ function rotate( vector, a )
 
 end
 
+function normalized( vector )
+
+	local mag = math.sqrt( ( vector[1] * vector[1] ) + ( vector[2] * vector[2] ) )
+	
+	if mag == 0 then
+		return { 0, 0 }
+	end
+
+	return { vector[1] / mag, vector[2] / mag }
+
+end
+
 function wrapPosition( vector, xMIN, xMAX, yMIN, yMAX )
 
 	if vector[1] < xMIN then
