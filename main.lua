@@ -34,7 +34,7 @@ end
 
 function love.load()
 
-	debugInfo = false
+	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -45,28 +45,44 @@ function love.load()
 	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
-
+	
+	--playable world size
 	worldWidth = 800
 	worldHeight = 600
-	canvasWidth = worldWidth + 200
-	canvasHeight = worldHeight + 200
 	
-	buffer = love.graphics.newCanvas( canvasWidth, canvasHeight )
-	buffer_x = ( love.graphics.getWidth() - worldWidth - 200 ) * 0.5
-	buffer_y = ( love.graphics.getHeight() - worldHeight - 200 ) * 0.5
-
-	viewport = love.graphics.newQuad( 100, 100, worldWidth, worldHeight, canvasWidth, canvasHeight )
+	--total renderable canvas size
+	wrapBufferOffset = 100
+	bufferWidth = worldWidth + wrapBufferOffset * 2
+	bufferHeight = worldHeight + wrapBufferOffset * 2
+	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
 	wrapZones = {
-		topLeft = love.graphics.newQuad( 0, 0, 100, 100, canvasWidth, canvasHeight ),
-		top = love.graphics.newQuad( 100, 0, worldWidth, 100, canvasWidth, canvasHeight ),
-		topRight = love.graphics.newQuad( worldWidth + 100, 0, 100, 100, canvasWidth, canvasHeight ),
-		left = love.graphics.newQuad( 0, 100, 100, worldHeight, canvasWidth, canvasHeight ),
-		right = love.graphics.newQuad( worldWidth + 100, 100, 100, worldHeight, canvasWidth, canvasHeight ),
-		bottomLeft = love.graphics.newQuad( 0, worldHeight + 100, 100, 100, canvasWidth, canvasHeight ),
-		bottom = love.graphics.newQuad( 100, worldHeight + 100, worldWidth, 100, canvasWidth, canvasHeight ),
-		bottomRight = love.graphics.newQuad( worldWidth + 100, worldHeight + 100, 100, 100, canvasWidth, canvasHeight )
+		topLeft = love.graphics.newQuad( 0, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
+		top = love.graphics.newQuad( wrapBufferOffset, 0, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
+		topRight = love.graphics.newQuad( worldWidth + wrapBufferOffset, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
+		left = love.graphics.newQuad( 0, wrapBufferOffset, wrapBufferOffset, worldHeight, bufferWidth, bufferHeight ),
+		right = love.graphics.newQuad( worldWidth + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, worldHeight, bufferWidth, bufferHeight ),
+		bottomLeft = love.graphics.newQuad( 0, worldHeight + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
+		bottom = love.graphics.newQuad( wrapBufferOffset, worldHeight + wrapBufferOffset, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
+		bottomRight = love.graphics.newQuad( worldWidth + wrapBufferOffset, worldHeight + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight )
 	}
+
+	--quad that represents the viewport of the main playable area
+	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
+	
+
+	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
+		finalScale = love.graphics.getWidth() / worldWidth
+	else
+		finalScale = love.graphics.getHeight() / worldHeight
+	end
+
+	--the final buffer that is the world and all wrapped zones drawn
+	--this buffer can be used to do final scaling and positioning of the final drawn image
+	final = love.graphics.newCanvas( worldWidth, worldHeight )
+	
+	finalXOffset = ( love.graphics.getWidth() - ( worldWidth * finalScale ) ) * 0.5
+	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
 
 end
 
@@ -87,12 +103,12 @@ function love.update( dt )
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
-		wrapPosition( asteroids[i].position, 100, worldWidth + 100, 100, worldHeight + 100 )
+		wrapPosition( asteroids[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
 	end
 
 	for i = #bullets, 1, -1 do
 		bullets[i]:update( dt )
-		wrapPosition( bullets[i].position, 100, worldWidth + 100, 100, worldHeight + 100 )
+		wrapPosition( bullets[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
 	end
 
 	if love.keyboard.isDown( "k" ) then
@@ -113,7 +129,7 @@ function love.update( dt )
 	playerShip.posVel[1] = playerShip.posVel[1] - ( playerShip.posVel[1] * dt * 0.5 )
 	playerShip.posVel[2] = playerShip.posVel[2] - ( playerShip.posVel[2] * dt * 0.5 )
 
-	wrapPosition( playerShip.position, 100, worldWidth + 100, 100, worldHeight + 100 )
+	wrapPosition( playerShip.position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
 
 end
 
@@ -122,8 +138,6 @@ end
 ------------------------------------------------------------
 
 function love.draw()
-
-	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
 
 	love.graphics.setCanvas( buffer )
 
@@ -144,28 +158,33 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( playerShip.model, playerShip.position[1], playerShip.position[2], playerShip.rotation )
 	
-	love.graphics.setCanvas()
-
 	love.graphics.setWireframe( false )
 
+	love.graphics.setCanvas()
+
+	love.graphics.setCanvas( final )
+
+	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+
 	--draw main canvas
-	love.graphics.draw( buffer, viewport, buffer_x + 100, buffer_y + 100 )
+	love.graphics.draw( buffer, viewport, 0, 0 )
 
 	--draw the 8 wrapzones
-	love.graphics.draw( buffer, wrapZones.topLeft, buffer_x + worldWidth, buffer_y + worldHeight ) --topLeft
-	love.graphics.draw( buffer, wrapZones.top, buffer_x + 100, buffer_y + worldHeight ) --top
-	love.graphics.draw( buffer, wrapZones.topRight, buffer_x + 100, buffer_y + worldHeight ) --topRight
-	love.graphics.draw( buffer, wrapZones.left, buffer_x + worldWidth, buffer_y + 100 ) --left
-	love.graphics.draw( buffer, wrapZones.right, buffer_x + 100, buffer_y + 100 ) --right
-	love.graphics.draw( buffer, wrapZones.bottomLeft, buffer_x + worldWidth, buffer_y + 100 ) --bottomLeft
-	love.graphics.draw( buffer, wrapZones.bottom, buffer_x + 100, buffer_y + 100 ) --bottom
-	love.graphics.draw( buffer, wrapZones.bottomRight, buffer_x + 100, buffer_y + 100 ) --bottomRight
+	love.graphics.draw( buffer, wrapZones.topLeft, worldWidth - wrapBufferOffset, worldHeight - wrapBufferOffset ) --topLeft > bottomRight
+	love.graphics.draw( buffer, wrapZones.top, 0, worldHeight - wrapBufferOffset ) --top > bottom
+	love.graphics.draw( buffer, wrapZones.topRight, 0, worldHeight - wrapBufferOffset ) --topRight > bottomLeft
+	love.graphics.draw( buffer, wrapZones.left, worldWidth - wrapBufferOffset, 0 ) --left > right
+	love.graphics.draw( buffer, wrapZones.right, 0, 0 ) --right > left
+	love.graphics.draw( buffer, wrapZones.bottomLeft, worldWidth - wrapBufferOffset, 0 ) --bottomLeft > topRight
+	love.graphics.draw( buffer, wrapZones.bottom, 0, 0 ) --bottom > top
+	love.graphics.draw( buffer, wrapZones.bottomRight, 0, 0 ) --bottomRight > topLeft
 
-	love.graphics.rectangle( "line", buffer_x + 100, buffer_y + 100, buffer:getWidth() - 200, buffer:getHeight() - 200 )
-	love.graphics.rectangle( "line", buffer_x, buffer_y, buffer:getWidth(), buffer:getHeight() )
+	love.graphics.setCanvas()
+
+	love.graphics.draw( final, finalXOffset, finalYOffset, 0, finalScale )
 
 	if debugInfo then
-		love.graphics.line( playerShip.position[1] + buffer_x, playerShip.position[2] + buffer_y, playerShip.position[1] + buffer_x + playerShip.posVel[1], playerShip.position[2] + buffer_y + playerShip.posVel[2] )
+		love.graphics.line( ( playerShip.position[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( playerShip.position[2] - wrapBufferOffset ) * finalScale + finalYOffset, ( playerShip.position[1] + 20 * playerShip.posVel[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( playerShip.position[2] + 20 * playerShip.posVel[2] - wrapBufferOffset ) * finalScale + finalYOffset )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
 		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..playerShip.position[1].."\ny: "..playerShip.position[2], 0, 450 )
 	end

@@ -16,19 +16,21 @@ P R O C E D U R A L    C R E A T I O N    O F    A S T E R O I D S
 			and the final vertex which is the vertex nearest the collision of the ray on the far side of the asteroid, the second collision on the polygon as the ray exits
 			- or just create two smaller asteroids of abritary shapes
 
+
 E F F I C I E N T    A S T E R O I D    D E S T R U C T I O N    A N D    C R E A T I O N
 
 	- avoid using table.remove()S as it is a costly method
 	- instead have two tables one with all the asteroid objects and the other with a list of dead asteroids
 	- when an asteroid is destroyed mark it as dead and available for the next time we need to create an asteroid
-	- 
+
 
 T H E    P O W E R    O F    M E S H E S
 
 	- use the power of meshes to render all eight copies of each object...
 	- create all copies of objects in one mesh to render all at once as a list of triangles
 
-LOL JK THE MESH IDEA DOESN'T WORK... THE ENTIRE MESH IS DRAWN ROTATED
+LOL JK THE MESH IDEA DOESN'T WORK... ALL TRIANGLES ARE DRAWN ROTATED AROUND THE MESH'S MAIN ORIGIN
+
 
 T H E    P O W E R    O F    S H A D E R S
 
@@ -40,4 +42,29 @@ T H E    P O W E R    O F    S H A D E R S
         - naturally to ensure we can see all game objects at any given time we will wrap all objects positions according to the dimensions of the world view quad
         - this solves the issue of having objects abruptly teleport to the other side of the screen when out of bounds
         - the pixel shader will ensure that as the object passes out of bounds it's graphics are smoothly wrapped to the other side of the screen
-        - the other advantage is that now with a bit of work we can also define a set world size and just scale according to the user's display size to ensure a consistent experience across devices 
+        - the other advantage is that now with a bit of work we can also define a set world size and just scale according to the user's display size to ensure a consistent experience across devices
+
+LOL SO THE FRAGMENT SHADER THING DIDN'T WORK EITHER (FRAG SHADERS CAN'T CHANGE THE POSITION OF A PIXEL...)
+
+
+T H E    P O W E R    O F    O F F - R E N D E R    T A R G E T S    ( F R A M E    B U F F E R S )
+
+	- this one works lol (implemented and confirmed)
+	- total # of draw calls = nObjects + 8 canvas wrapzone calls    VS    nObjects * 8 for each of the wrap cases
+	- we draw all objects to a canvas, buffer, that is larger than the actual playable area by a constant offset on all sides
+	- once all objects are drawn we split up the buffer zone into 8 individual sections that will be drawn in their diametrically opposed position overlapping the main playable area
+
+	-----------------------
+	| TL |    TOP    | TR |		topLeft > bottomRight
+	-----------------------		top > bottom
+	|    |		 |    |		topRight > bottomLeft
+	| L  |		 | R  |		left > right
+	|    |		 |    |		right > left
+	-----------------------		bottomLeft > topRight
+	| BL |   BOTTOM  | BR |		bottom > top
+	-----------------------		bottomRight > topLeft
+
+	- after the main buffer and all overlapping wrap zones to the final buffer we draw this final buffer to the screen
+	- general positioning and scaling can now be done on the final buffer as needed
+	- using this method of wrapping the graphics along with a method to wrap objects positions within the intial buffer according to the world size we obtain sweet sweet smooth wrap transitions
+	- NOTE: the buffer zone offset must be larger than the largest object in play to avoid clipping ( when the object crosses the edge of the initial main canvas before being positionally wrapped ) 
