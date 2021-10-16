@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	debugInfo = false
+	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -25,8 +25,10 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 	
 	--playable world size
-	worldWidth = 800
-	worldHeight = 600
+	worldWidth = 960
+	worldHeight = 540
+
+	meshScale = worldWidth / 1280
 	
 	--total renderable canvas size
 	wrapBufferOffset = 100
@@ -128,7 +130,7 @@ function love.draw()
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
-			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation, 1 - ( b.time / b.lifespan ) )
+			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,  lerp( 1, 0.25, b.time / b.lifespan ) )
 		end
 	end
 

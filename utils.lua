@@ -12,6 +12,12 @@ function rotate( vector, a )
 
 end
 
+function lerp( a, b, t )
+
+	return a + ( b  - a ) * t
+
+end
+
 function normalized( vector )
 
 	local mag = math.sqrt( ( vector[1] * vector[1] ) + ( vector[2] * vector[2] ) )
