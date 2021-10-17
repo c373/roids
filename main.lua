@@ -67,7 +67,7 @@ function love.load()
 end
 
 ------------------------------------------------------------
---                     U P D A T E                        --
+--		       U P D A T E			  	--
 ------------------------------------------------------------
 
 function love.update( dt )
@@ -111,7 +111,7 @@ function love.update( dt )
 end
 
 ------------------------------------------------------------
---                       D R A W                          --
+--			 D R A W			  --
 ------------------------------------------------------------
 
 function love.draw()
@@ -130,7 +130,7 @@ function love.draw()
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
-			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,  lerp( 1, 0.25, b.time / b.lifespan ) )
+			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
 		end
 	end
 
@@ -171,7 +171,7 @@ function love.draw()
 end
 
 ------------------------------------------------------------
---                  C A L L B A C K S                     --
+--		    C A L L B A C K S			  --
 ------------------------------------------------------------
 
 function love.keypressed( key, scancode, isrepeat )
