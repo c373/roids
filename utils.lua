@@ -33,15 +33,15 @@ end
 function wrapPosition( vector, xMIN, xMAX, yMIN, yMAX )
 
 	if vector[1] < xMIN then
-		vector[1] = xMAX
+		vector[1] = vector[1] + xMAX - xMIN
 	elseif vector[1] > xMAX then
-		vector[1] = xMIN
+		vector[1] = vector[1] - xMAX + xMIN
 	end
 
 	if vector[2] < yMIN then
-		vector[2] = yMAX
+		vector[2] = vector[2] + yMAX - yMIN
 	elseif vector[2] > yMAX then
-		vector[2] = yMIN
+		vector[2] = vector[2] - yMAX + yMIN
 	end
 
 end
