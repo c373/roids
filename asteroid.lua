@@ -1,6 +1,7 @@
 asteroid = {}
 
 asteroid.model = {}
+asteroid.polygon = nil
 asteroid.position = { 0, 0 }
 asteroid.posVel = { 0, 0 }
 asteroid.speed = 0
@@ -15,7 +16,9 @@ function asteroid:new( x, y )
 	self.__index = self
 	setmetatable( a, asteroid )
 
-	a.model = love.graphics.newMesh( vertexListToVertexColorList( newAsteroidVertices( { min = 15, max = 30 } ) ), "fan", "dynamic" )
+	local vertices = newAsteroidVertices( { min = 15, max = 30 } )
+	a.model = love.graphics.newMesh( vertexListToVertexColorList( vertices ), "fan", "dynamic" )
+	a.polygon = createPickablePolygon( vertices )
 	a.position = { math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) }
 	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
 	a.speed = math.random( 0, 300 )

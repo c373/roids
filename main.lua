@@ -22,14 +22,14 @@ function love.load()
 
 	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
 
+	hit = false
+
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 	
 	--playable world size
 	worldWidth = 960
 	worldHeight = 540
 
-	meshScale = worldWidth / 1280
-	
 	--total renderable canvas size
 	wrapBufferOffset = 100
 	bufferWidth = worldWidth + wrapBufferOffset * 2
@@ -122,15 +122,22 @@ function love.draw()
 
 	love.graphics.setWireframe( true )
 
+	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
+	love.graphics.setColor( 1, 1, 1, 1 )
 
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
 			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
+			if isPointInPolygon( b.position[1] - asteroids[1].position[1], b.position[2] - asteroids[1].position[2], asteroids[1].polygon ) then
+				hit = true
+			else
+				hit = false
+			end
 		end
 	end
 
