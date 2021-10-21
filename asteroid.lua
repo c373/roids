@@ -35,7 +35,7 @@ function asteroid:update( dt )
 	self.position[1] = self.position[1] + self.posVel[1] * self.speed * dt
 	self.position[2] = self.position[2] + self.posVel[2] * self.speed * dt
 	self.rotation = self.rotation + self.rotVel * dt
-
+	rotatePolygon( self.polygon, self.rotation )
 end
 
 function newAsteroidVertices( radiusRange )
