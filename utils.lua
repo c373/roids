@@ -13,15 +13,17 @@ function rotate( vector, a )
 end
 
 function rotatePolygon( polygon, a )
+	local poly = {}
 	local c = math.cos( a )
 	local s = math.sin( a )
 	local x, y = 0, 0
 	for i = 1, #polygon - 1, 2 do
 		x = c * polygon[i] - s * polygon[i+1]
 		y = s * polygon[i] + c * polygon[i+1]
-		polygon[i] = x
-		polygon[i+1] = y
+		poly[#poly+1] = x
+		poly[#poly+1] = y
 	end
+	return poly
 end
 
 function lerp( a, b, t )

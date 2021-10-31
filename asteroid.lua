@@ -2,6 +2,9 @@ asteroid = {}
 
 asteroid.model = {}
 asteroid.polygon = nil
+asteroid.rotatedPoly = nil
+asteroid.drawablePolygon = nil
+asteroid.collisionBody = nil
 asteroid.position = { 0, 0 }
 asteroid.posVel = { 0, 0 }
 asteroid.speed = 0
@@ -18,7 +21,10 @@ function asteroid:new( x, y )
 
 	local vertices = newAsteroidVertices( { min = 15, max = 30 } )
 	a.model = love.graphics.newMesh( vertexListToVertexColorList( vertices ), "fan", "dynamic" )
-	a.polygon = createPickablePolygon( vertices )
+	a.polygon = vertices
+	a.rotatedPoly = rotatePolygon( vertices, 0 )
+	a.drawablePolygon = love.graphics.newMesh( vertexListToVertexColorList( vertices), "fan", "dynamic" )
+	a.collisionBody = createPickablePolygon( vertices )
 	a.position = { math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) }
 	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
 	a.speed = math.random( 0, 300 )
@@ -35,7 +41,9 @@ function asteroid:update( dt )
 	self.position[1] = self.position[1] + self.posVel[1] * self.speed * dt
 	self.position[2] = self.position[2] + self.posVel[2] * self.speed * dt
 	self.rotation = self.rotation + self.rotVel * dt
-	rotatePolygon( self.polygon, self.rotation )
+	self.rotatedPoly = rotatePolygon( self.polygon, self.rotation )
+	self.drawablePolygon = love.graphics.newMesh( vertexListToVertexColorList( self.rotatedPoly ), "fan", "dynamic" )
+	self.collisionBody = createPickablePolygon( self.rotatedPoly )
 end
 
 function newAsteroidVertices( radiusRange )

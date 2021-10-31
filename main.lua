@@ -126,6 +126,8 @@ function love.draw()
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
+		love.graphics.setColor( 0, 1, 0, 0.25 )
+		love.graphics.draw( a.drawablePolygon, a.position[1], a.position[2] )
 	end
 	love.graphics.setColor( 1, 1, 1, 1 )
 
@@ -133,10 +135,8 @@ function love.draw()
 		if bullets[i].alive then
 			local b = bullets[i]
 			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
-			if isPointInPolygon( b.position[1] - asteroids[1].position[1], b.position[2] - asteroids[1].position[2], asteroids[1].polygon ) then
+			if isPointInPolygon( b.position[1] - asteroids[1].position[1], b.position[2] - asteroids[1].position[2], asteroids[1].collisionBody ) then
 				hit = true
-			else
-				hit = false
 			end
 		end
 	end
