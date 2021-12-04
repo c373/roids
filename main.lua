@@ -20,7 +20,7 @@ function love.load()
 		love.profiler.start()
 	end
 
-	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
+	asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 
 	hit = false
 

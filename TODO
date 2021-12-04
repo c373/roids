@@ -81,4 +81,14 @@ C O L L I S I O N    D E T E C T I O N    O N    W R A P S
 		- we can modify the collision detection algorithm to take 4 additional values, the distances from each of the edges (top, bottom, left, right) when these fall below the size of the asteroid being tested, we will pass -1 when they don't to avoid unnecessary collision checks
 		- this way each asteroid will have it's main collision detection based on it's real position and up to 3 additional collision checks with vertices offset to correspond to the graphical representation of the asteroid when it's wrapped on to the other edges of the screen
 
+C O L L I S I O N    D E T E C T I O N    T Y P E    C H A N G E
+
+	- need to create a polygon vs polygon collision detection that will be optimized by using a hash map to limit calls to algo
+	- consider using meshes to hold all the collision information... you can then detect collisions with the resulting list of triangles
+	- YESSSS I will use the seperate axis theorem to detect collisions between triangles for each oject... (list of vertices from each object)
+
+
+
+
+
 
