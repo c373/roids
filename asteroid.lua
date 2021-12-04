@@ -2,15 +2,14 @@ asteroid = {}
 
 asteroid.model = {}
 asteroid.polygon = nil
-asteroid.rotatedPoly = nil
-asteroid.drawablePolygon = nil
+asteroid.rotatedPolygon = nil
+asteroid.drawableCollBody = nil
 asteroid.collisionBody = nil
 asteroid.position = { 0, 0 }
 asteroid.posVel = { 0, 0 }
 asteroid.speed = 0
 asteroid.rotation = 0
 asteroid.rotVel = 0
-asteroid.bounds = 0
 
 function asteroid:new( x, y )
 
@@ -22,15 +21,14 @@ function asteroid:new( x, y )
 	local vertices = newAsteroidVertices( { min = 15, max = 30 } )
 	a.model = love.graphics.newMesh( vertexListToVertexColorList( vertices ), "fan", "dynamic" )
 	a.polygon = vertices
-	a.rotatedPoly = rotatePolygon( vertices, 0 )
-	a.drawablePolygon = love.graphics.newMesh( vertexListToVertexColorList( vertices), "fan", "dynamic" )
+	a.drawableCollBody = love.graphics.newMesh( vertexListToVertexColorList( vertices), "fan", "dynamic" )
 	a.collisionBody = createPickablePolygon( vertices )
 	a.position = { math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) }
 	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
 	a.speed = math.random( 0, 300 )
 	a.rotation = math.random( 0, 6.28 )
 	a.rotVel = math.random( 0, 3.14 )
-	a.bounds = 30
+	a.transformedPolygon = rotatePolygon( a.polygon, a.rotation )
 
 	return a
 
@@ -40,10 +38,13 @@ function asteroid:update( dt )
 
 	self.position[1] = self.position[1] + self.posVel[1] * self.speed * dt
 	self.position[2] = self.position[2] + self.posVel[2] * self.speed * dt
-	self.rotation = self.rotation + self.rotVel * dt
-	self.rotatedPoly = rotatePolygon( self.polygon, self.rotation )
-	self.drawablePolygon = love.graphics.newMesh( vertexListToVertexColorList( self.rotatedPoly ), "fan", "dynamic" )
-	self.collisionBody = createPickablePolygon( self.rotatedPoly )
+	
+	local rotationDelta = self.rotVel * dt
+
+	self.rotation = self.rotation + rotationDelta
+	self.rotatedPolygon = rotatePolygon( self.polygon, self.rotation )
+	self.drawableCollBody = love.graphics.newMesh( vertexListToVertexColorList( self.rotatedPolygon ), "fan", "dynamic" )
+	self.collisionBody = createPickablePolygon( self.rotatedPolygon )
 end
 
 function newAsteroidVertices( radiusRange )

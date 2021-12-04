@@ -57,9 +57,9 @@ T H E    P O W E R    O F    O F F - R E N D E R    T A R G E T S    ( F R A M E
 	-----------------------
 	| TL |    TOP    | TR |		topLeft > bottomRight
 	-----------------------		top > bottom
-	|    |		 |    |		topRight > bottomLeft
-	| L  |		 | R  |		left > right
-	|    |		 |    |		right > left
+	|    |           |    |		topRight > bottomLeft
+	| L  |           | R  |		left > right
+	|    |           |    |		right > left
 	-----------------------		bottomLeft > topRight
 	| BL |   BOTTOM  | BR |		bottom > top
 	-----------------------		bottomRight > topLeft
@@ -68,3 +68,17 @@ T H E    P O W E R    O F    O F F - R E N D E R    T A R G E T S    ( F R A M E
 	- general positioning and scaling can now be done on the final buffer as needed
 	- using this method of wrapping the graphics along with a method to wrap objects positions within the intial buffer according to the world size we obtain sweet sweet smooth wrap transitions
 	- NOTE: the buffer zone offset must be larger than the largest object in play to avoid clipping ( when the object crosses the edge of the initial main canvas before being positionally wrapped ) 
+
+
+C O L L I S I O N    D E T E C T I O N    O N    W R A P S
+
+	WHAT: an idea to detect and resolve collisions of asteroids on the portion of the asteroid that is wrapped around to the other side of the screen
+	WHY IT'S NEEDED: asteroid's collision bodies aren't wrapped smoothly like the graphics... the collision body is wraped abrutly once the center (position of the asteroid) goes out of bounds
+	HOW:
+		- each asteroid will need a size assigned to it that is just the length of the vertex furthest from the center of the asteroid
+		- we will use this value to determine when we need to do the more complex collision detection of asteroids
+		- when the distance of the asteroids position to any one of the bound edges is less than or equal to this size value then we need to perform additional collision detection with modified position values for all the asteroid's vertices
+		- we can modify the collision detection algorithm to take 4 additional values, the distances from each of the edges (top, bottom, left, right) when these fall below the size of the asteroid being tested, we will pass -1 when they don't to avoid unnecessary collision checks
+		- this way each asteroid will have it's main collision detection based on it's real position and up to 3 additional collision checks with vertices offset to correspond to the graphical representation of the asteroid when it's wrapped on to the other edges of the screen
+
+

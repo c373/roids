@@ -64,6 +64,9 @@ function love.load()
 	finalXOffset = ( love.graphics.getWidth() - ( worldWidth * finalScale ) ) * 0.5
 	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
 
+	player.position[1] = wrapBufferOffset + ( worldWidth * 0.5 )
+	player.position[2] = wrapBufferOffset + ( worldHeight * 0.5 )
+
 end
 
 ------------------------------------------------------------
@@ -90,6 +93,9 @@ function love.update( dt )
 		if bullets[i].alive then
 			bullets[i]:update( dt )
 			wrapPosition( bullets[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+			if isPointInPolygon( bullets[i].position[1] - asteroids[1].position[1], bullets[i].position[2] - asteroids[1].position[2], asteroids[1].collisionBody ) then
+				hit = true
+			end
 		end
 	end
 
@@ -103,6 +109,10 @@ function love.update( dt )
 
 	if love.keyboard.isDown( "f" ) then
 		player:rotate( "right", dt )
+	end
+	
+	if love.keyboard.isDown( "r" ) then
+		hit = false
 	end
 
 	player:update( dt )
@@ -127,7 +137,7 @@ function love.draw()
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 		love.graphics.setColor( 0, 1, 0, 0.25 )
-		love.graphics.draw( a.drawablePolygon, a.position[1], a.position[2] )
+		love.graphics.draw( a.drawableCollBody, a.position[1], a.position[2] )
 	end
 	love.graphics.setColor( 1, 1, 1, 1 )
 
@@ -135,9 +145,6 @@ function love.draw()
 		if bullets[i].alive then
 			local b = bullets[i]
 			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
-			if isPointInPolygon( b.position[1] - asteroids[1].position[1], b.position[2] - asteroids[1].position[2], asteroids[1].collisionBody ) then
-				hit = true
-			end
 		end
 	end
 
@@ -172,7 +179,7 @@ function love.draw()
 	if debugInfo then
 		love.graphics.line( ( player.position[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] - wrapBufferOffset ) * finalScale + finalYOffset, ( player.position[1] + 20 * player.velocity[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] + 20 * player.velocity[2] - wrapBufferOffset ) * finalScale + finalYOffset )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
+		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation.."\nastx:"..asteroids[1].position[1].."\nasty:"..asteroids[1].position[2], 0, 450 )
 	end
 
 end
