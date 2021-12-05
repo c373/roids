@@ -23,8 +23,8 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
 	--playable world size
-	worldWidth = 1920
-	worldHeight = 1080
+	worldWidth = 960
+	worldHeight = 540
 
 	--total renderable canvas size
 	wrapBufferOffset = 100
@@ -32,6 +32,7 @@ function love.load()
 	bufferHeight = worldHeight + wrapBufferOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
+	--quads for each of the wrapZones that will be overlayed on the main canvas to render what has gone off screen on each respective opposite edge
 	wrapZones = {
 		topLeft = love.graphics.newQuad( 0, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
 		top = love.graphics.newQuad( wrapBufferOffset, 0, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
@@ -46,7 +47,7 @@ function love.load()
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
 	
-
+	--generate a finalscale with which to draw all the final buffer to the screen
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
 		finalScale = love.graphics.getWidth() / worldWidth
 	else
@@ -56,10 +57,12 @@ function love.load()
 	--the final buffer that is the world and all wrapped zones drawn
 	--this buffer can be used to do final scaling and positioning of the final drawn image
 	final = love.graphics.newCanvas( worldWidth, worldHeight )
-	
+
+	--center the final buffer on the screen
 	finalXOffset = ( love.graphics.getWidth() - ( worldWidth * finalScale ) ) * 0.5
 	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
 
+	--center the player ship
 	player.position[1] = wrapBufferOffset + ( worldWidth * 0.5 )
 	player.position[2] = wrapBufferOffset + ( worldHeight * 0.5 )
 
@@ -123,15 +126,26 @@ function love.draw()
 
 	love.graphics.clear( 1, 1, 1, 0 )
 
-	love.graphics.setWireframe( true )
+	--love.graphics.setWireframe( true )
 
+	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
+
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
+
+	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+
+	for i = 1, #asteroids do
+		local a = asteroids[i]
+		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.9 )
+	end
+
 	love.graphics.setColor( 1, 1, 1, 1 )
 
+	--draw all bullets
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]

@@ -59,7 +59,7 @@ function lerp( a, b, t )
 	return a + ( b  - a ) * t
 end
 
-function normalized( vector )
+function normalize( vector )
 
 	local mag = math.sqrt( ( vector[1] * vector[1] ) + ( vector[2] * vector[2] ) )
 	
@@ -67,7 +67,10 @@ function normalized( vector )
 		return { 0, 0 }
 	end
 
-	return { vector[1] / mag, vector[2] / mag }
+	vector[1] = vector[1] / mag
+	vector[2] = vector[2] / mag
+
+	return vector
 
 end
 
