@@ -195,7 +195,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "return" then
-		asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
+		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	if key == "j" then
