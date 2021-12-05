@@ -69,6 +69,7 @@ T H E    P O W E R    O F    O F F - R E N D E R    T A R G E T S    ( F R A M E
 	- using this method of wrapping the graphics along with a method to wrap objects positions according to the world size we obtain sweet sweet smooth wrap transitions
 	- NOTE: the buffer zone offset must be larger than the largest object in play to avoid clipping (when the object is out of bounds of the initial main canvas before being positionally wrapped it will show up as clipping on the when wrapped) 
 
+	- ALSO! The next step is to make this method extensible by generalizing it for different sized screens... although I think I'll keep it the same for this game since I don't want screen size to disrupt gameplay balance
 
 C O L L I S I O N    D E T E C T I O N    O N    W R A P S
 
