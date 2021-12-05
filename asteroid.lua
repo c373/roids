@@ -20,7 +20,7 @@ function asteroid:new( x, y )
 	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
 	a.speed = math.random( 0, 300 )
 	a.rotation = math.random( 0, 6.28 )
-	a.rotVel = math.random( 0, 3.14 )
+	a.rotVel = math.random( -3.14, 3.14 )
 
 	return a
 

@@ -23,8 +23,8 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
 	--playable world size
-	worldWidth = 960
-	worldHeight = 540
+	worldWidth = 1920
+	worldHeight = 1080
 
 	--total renderable canvas size
 	wrapBufferOffset = 100
