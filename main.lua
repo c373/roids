@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	debugInfo = true
+--	debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -140,7 +140,7 @@ function love.draw()
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
-		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.9 )
+		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.95 )
 	end
 
 	love.graphics.setColor( 1, 1, 1, 1 )
@@ -155,6 +155,12 @@ function love.draw()
 
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
+
+	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+	
+	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.9 )
+
+	love.graphics.setColor( 1, 1, 1, 1 )
 	
 	love.graphics.setWireframe( false )
 
