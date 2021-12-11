@@ -100,11 +100,19 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
-		player:rotate( "left", dt )
+		if love.keyboard.isDown( "s" ) then
+			player:rotate( "left", true, dt )
+		else
+			player:rotate( "left", false, dt )
+		end
 	end
 
 	if love.keyboard.isDown( "f" ) then
-		player:rotate( "right", dt )
+		if love.keyboard.isDown( "s" ) then
+			player:rotate( "right", true, dt )
+		else
+			player:rotate( "right", false, dt )
+		end
 	end
 	
 	if love.keyboard.isDown( "r" ) then
