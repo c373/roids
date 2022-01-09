@@ -98,3 +98,8 @@ F I N A L    S C A L E    G E N E R A L I Z A T I O N
 
 
 
+I PROBABLY CAN USE A FRAGMENT SHADER FOR WRAPPING!!
+1st within a certain range from each designated edge check the value of the pixel offset by the final buffer screen size
+2nd if it isn't empty then draw it on the current pixel
+Also if there is something on the current pixel to draw don't do the check
+This while not exactly warping the pixel or modifying it's position will still achieve the desired result
