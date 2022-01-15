@@ -23,8 +23,8 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
 	--playable world size
-	worldWidth = 960
-	worldHeight = 540
+	worldWidth = 1920
+	worldHeight = 1080
 
 	--total renderable canvas size
 	wrapBufferOffset = 100
@@ -117,6 +117,10 @@ function love.update( dt )
 	
 	if love.keyboard.isDown( "r" ) then
 		hit = false
+	end
+
+	if love.keyboard.isDown( "return" ) then
+		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	player:update( dt )
