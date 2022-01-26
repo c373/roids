@@ -46,7 +46,7 @@ function love.load()
 
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
-	
+
 	--generate a finalscale with which to draw all the final buffer to the screen
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
 		finalScale = love.graphics.getWidth() / worldWidth
@@ -114,7 +114,7 @@ function love.update( dt )
 			player:rotate( "right", false, dt )
 		end
 	end
-	
+
 	if love.keyboard.isDown( "r" ) then
 		hit = false
 	end
@@ -169,11 +169,11 @@ function love.draw()
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
 	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
-	
+
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.85 )
 
 	love.graphics.setColor( 1, 1, 1, 1 )
-	
+
 	love.graphics.setWireframe( false )
 
 	love.graphics.setCanvas()
@@ -214,7 +214,7 @@ end
 function love.keypressed( key, scancode, isrepeat )
 
 	if key == "escape" then
-	   love.event.quit()
+		love.event.quit()
 	end
 
 	if key == "return" then
@@ -224,5 +224,5 @@ function love.keypressed( key, scancode, isrepeat )
 	if key == "j" then
 		bullets[#bullets + 1] = bullet:new( models.bullet, player.position, player.rotation, player.velocity )
 	end
-	
+
  end
