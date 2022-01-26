@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	debugInfo = true
+	--debugInfo = true
 
 	if debugInfo then
 		love.frame = 0
@@ -20,15 +20,11 @@ function love.load()
 		love.profiler.start()
 	end
 
-	asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
-
-	hit = false
-
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
-	
+
 	--playable world size
-	worldWidth = 960
-	worldHeight = 540
+	worldWidth = 1920
+	worldHeight = 1080
 
 	--total renderable canvas size
 	wrapBufferOffset = 100
@@ -36,6 +32,7 @@ function love.load()
 	bufferHeight = worldHeight + wrapBufferOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
+	--quads for each of the wrapZones that will be overlayed on the main canvas to render what has gone off screen on each respective opposite edge
 	wrapZones = {
 		topLeft = love.graphics.newQuad( 0, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
 		top = love.graphics.newQuad( wrapBufferOffset, 0, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
@@ -50,7 +47,7 @@ function love.load()
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
 	
-
+	--generate a finalscale with which to draw all the final buffer to the screen
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
 		finalScale = love.graphics.getWidth() / worldWidth
 	else
@@ -60,9 +57,14 @@ function love.load()
 	--the final buffer that is the world and all wrapped zones drawn
 	--this buffer can be used to do final scaling and positioning of the final drawn image
 	final = love.graphics.newCanvas( worldWidth, worldHeight )
-	
+
+	--center the final buffer on the screen
 	finalXOffset = ( love.graphics.getWidth() - ( worldWidth * finalScale ) ) * 0.5
 	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
+
+	--center the player ship
+	player.position[1] = wrapBufferOffset + ( worldWidth * 0.5 )
+	player.position[2] = wrapBufferOffset + ( worldHeight * 0.5 )
 
 end
 
@@ -98,11 +100,27 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
-		player:rotate( "left", dt )
+		if love.keyboard.isDown( "s" ) then
+			player:rotate( "left", true, dt )
+		else
+			player:rotate( "left", false, dt )
+		end
 	end
 
 	if love.keyboard.isDown( "f" ) then
-		player:rotate( "right", dt )
+		if love.keyboard.isDown( "s" ) then
+			player:rotate( "right", true, dt )
+		else
+			player:rotate( "right", false, dt )
+		end
+	end
+	
+	if love.keyboard.isDown( "r" ) then
+		hit = false
+	end
+
+	if love.keyboard.isDown( "return" ) then
+		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	player:update( dt )
@@ -120,29 +138,41 @@ function love.draw()
 
 	love.graphics.clear( 1, 1, 1, 0 )
 
-	love.graphics.setWireframe( true )
+	--love.graphics.setWireframe( true )
 
+	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
+
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
-		love.graphics.setColor( 0, 1, 0, 0.25 )
-		love.graphics.draw( a.drawablePolygon, a.position[1], a.position[2] )
 	end
+
+	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+
+	for i = 1, #asteroids do
+		local a = asteroids[i]
+		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.93 )
+	end
+
 	love.graphics.setColor( 1, 1, 1, 1 )
 
+	--draw all bullets
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
 			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
-			if isPointInPolygon( b.position[1] - asteroids[1].position[1], b.position[2] - asteroids[1].position[2], asteroids[1].collisionBody ) then
-				hit = true
-			end
 		end
 	end
 
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
+
+	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+	
+	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.85 )
+
+	love.graphics.setColor( 1, 1, 1, 1 )
 	
 	love.graphics.setWireframe( false )
 
@@ -188,7 +218,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "return" then
-		asteroids[#asteroids + 1] = asteroid:new( 0, 0 )
+		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	if key == "j" then

@@ -8,7 +8,8 @@ ship = {
 	velocity = { 0, 0 },
 	speed = 500,
 	rotation = 0,
-	rotationSpeed = 6.28
+	rotationSpeed = 6.28,
+	preciseRotationSpeed = 1.57
 }
 
 function ship:new( model, player, position, rotation, vel )
@@ -52,12 +53,20 @@ function ship:accel( dt )
 
 end
 
-function ship:rotate( direction, dt )
+function ship:rotate( direction, precise, dt )
+
+	local rotationSpeedActual
+
+	if precise then
+		rotationSpeedActual = self.preciseRotationSpeed
+	else
+		rotationSpeedActual = self.rotationSpeed
+	end
 
 	if direction == "right" then
-		self.rotation = self.rotation + self.rotationSpeed * dt
+		self.rotation = self.rotation + rotationSpeedActual * dt
 	elseif direction == "left" then
-		self.rotation = self.rotation - self.rotationSpeed * dt
+		self.rotation = self.rotation - rotationSpeedActual * dt
 	end
 
 	if self.rotation > 6.28 then
