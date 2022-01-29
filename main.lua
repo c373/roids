@@ -14,6 +14,9 @@ function love.load()
 
 	--debugInfo = true
 
+	screenwrap = love.graphics.newShader( "screenwrap.fs" )
+	love.graphics.setShader( screenwrap )
+
 	if debugInfo then
 		love.frame = 0
 		love.profiler = require( "profile" )
@@ -23,26 +26,14 @@ function love.load()
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
 	--playable world size
-	worldWidth = 1920
-	worldHeight = 1080
+	worldWidth = 640
+	worldHeight = 480
 
 	--total renderable canvas size
 	wrapBufferOffset = 100
 	bufferWidth = worldWidth + wrapBufferOffset * 2
 	bufferHeight = worldHeight + wrapBufferOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
-
-	--quads for each of the wrapZones that will be overlayed on the main canvas to render what has gone off screen on each respective opposite edge
-	wrapZones = {
-		topLeft = love.graphics.newQuad( 0, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
-		top = love.graphics.newQuad( wrapBufferOffset, 0, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
-		topRight = love.graphics.newQuad( worldWidth + wrapBufferOffset, 0, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
-		left = love.graphics.newQuad( 0, wrapBufferOffset, wrapBufferOffset, worldHeight, bufferWidth, bufferHeight ),
-		right = love.graphics.newQuad( worldWidth + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, worldHeight, bufferWidth, bufferHeight ),
-		bottomLeft = love.graphics.newQuad( 0, worldHeight + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight ),
-		bottom = love.graphics.newQuad( wrapBufferOffset, worldHeight + wrapBufferOffset, worldWidth, wrapBufferOffset, bufferWidth, bufferHeight ),
-		bottomRight = love.graphics.newQuad( worldWidth + wrapBufferOffset, worldHeight + wrapBufferOffset, wrapBufferOffset, wrapBufferOffset, bufferWidth, bufferHeight )
-	}
 
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
@@ -136,7 +127,7 @@ function love.draw()
 
 	love.graphics.setCanvas( buffer )
 
-	love.graphics.clear( 1, 1, 1, 0 )
+	love.graphics.clear( 0, 0, 0, 0 )
 
 	--love.graphics.setWireframe( true )
 
@@ -148,7 +139,8 @@ function love.draw()
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
 
-	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+	--love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+	love.graphics.setColor( 0, 0, 0, 1 )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -184,16 +176,6 @@ function love.draw()
 
 	--draw main canvas
 	love.graphics.draw( buffer, viewport, 0, 0 )
-
-	--draw the 8 wrapzones
-	love.graphics.draw( buffer, wrapZones.topLeft, worldWidth - wrapBufferOffset, worldHeight - wrapBufferOffset ) --topLeft > bottomRight
-	love.graphics.draw( buffer, wrapZones.top, 0, worldHeight - wrapBufferOffset ) --top > bottom
-	love.graphics.draw( buffer, wrapZones.topRight, 0, worldHeight - wrapBufferOffset ) --topRight > bottomLeft
-	love.graphics.draw( buffer, wrapZones.left, worldWidth - wrapBufferOffset, 0 ) --left > right
-	love.graphics.draw( buffer, wrapZones.right, 0, 0 ) --right > left
-	love.graphics.draw( buffer, wrapZones.bottomLeft, worldWidth - wrapBufferOffset, 0 ) --bottomLeft > topRight
-	love.graphics.draw( buffer, wrapZones.bottom, 0, 0 ) --bottom > top
-	love.graphics.draw( buffer, wrapZones.bottomRight, 0, 0 ) --bottomRight > topLeft
 
 	love.graphics.setCanvas()
 
