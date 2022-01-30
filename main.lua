@@ -15,7 +15,7 @@ function love.load()
 	--debugInfo = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
-	love.graphics.setShader( screenwrap )
+	--love.graphics.setShader( screenwrap )
 
 	if debugInfo then
 		love.frame = 0
@@ -29,16 +29,16 @@ function love.load()
 	worldWidth = 640
 	worldHeight = 480
 
-	--total renderable canvas size
-	wrapBufferOffset = 100
-	bufferWidth = worldWidth + wrapBufferOffset * 2
-	bufferHeight = worldHeight + wrapBufferOffset * 2
+	--total renderable canvas size (backbuffer)
+	wrapOffset = 100
+	bufferWidth = worldWidth + wrapOffset * 2
+	bufferHeight = worldHeight + wrapOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
 	--quad that represents the viewport of the main playable area
-	viewport = love.graphics.newQuad( wrapBufferOffset, wrapBufferOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
+	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
 
-	--generate a finalscale with which to draw all the final buffer to the screen
+	--generate a finalscale with which to draw the final buffer to the screen
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
 		finalScale = love.graphics.getWidth() / worldWidth
 	else
@@ -54,8 +54,8 @@ function love.load()
 	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
 
 	--center the player ship
-	player.position[1] = wrapBufferOffset + ( worldWidth * 0.5 )
-	player.position[2] = wrapBufferOffset + ( worldHeight * 0.5 )
+	player.position[1] = wrapOffset + ( worldWidth * 0.5 )
+	player.position[2] = wrapOffset + ( worldHeight * 0.5 )
 
 end
 
@@ -76,13 +76,13 @@ function love.update( dt )
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
-		wrapPosition( asteroids[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+		wrapPosition( asteroids[i].position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
 	end
 
 	for i = #bullets, 1, -1 do
 		if bullets[i].alive then
 			bullets[i]:update( dt )
-			wrapPosition( bullets[i].position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+			wrapPosition( bullets[i].position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
 		end
 	end
 
@@ -115,7 +115,7 @@ function love.update( dt )
 	end
 
 	player:update( dt )
-	wrapPosition( player.position, wrapBufferOffset, worldWidth + wrapBufferOffset, wrapBufferOffset, worldHeight + wrapBufferOffset )
+	wrapPosition( player.position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
 
 end
 
@@ -127,9 +127,9 @@ function love.draw()
 
 	love.graphics.setCanvas( buffer )
 
-	love.graphics.clear( 0, 0, 0, 0 )
+	love.graphics.clear( 1, 1, 1, 0 )
 
-	--love.graphics.setWireframe( true )
+	--draw all the objects in white
 
 	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
@@ -138,16 +138,6 @@ function love.draw()
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
-
-	--love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
-	love.graphics.setColor( 0, 0, 0, 1 )
-
-	for i = 1, #asteroids do
-		local a = asteroids[i]
-		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.93 )
-	end
-
-	love.graphics.setColor( 1, 1, 1, 1 )
 
 	--draw all bullets
 	for i = 1, #bullets do
@@ -160,19 +150,23 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
-	love.graphics.setColor( 0.08, 0.06, 0.08, 1 )
+	--draw all the black objects
+	love.graphics.setColor( 0, 0, 0, 1 )
+
+	for i = 1, #asteroids do
+		local a = asteroids[i]
+		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.93 )
+	end
 
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.85 )
 
 	love.graphics.setColor( 1, 1, 1, 1 )
 
-	love.graphics.setWireframe( false )
-
 	love.graphics.setCanvas()
 
 	love.graphics.setCanvas( final )
 
-	love.graphics.clear( 0.08, 0.06, 0.08, 1 )
+	love.graphics.clear( 0, 0, 0, 1 )
 
 	--draw main canvas
 	love.graphics.draw( buffer, viewport, 0, 0 )
@@ -182,7 +176,7 @@ function love.draw()
 	love.graphics.draw( final, finalXOffset, finalYOffset, 0, finalScale )
 
 	if debugInfo then
-		love.graphics.line( ( player.position[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] - wrapBufferOffset ) * finalScale + finalYOffset, ( player.position[1] + 20 * player.velocity[1] - wrapBufferOffset ) * finalScale + finalXOffset, ( player.position[2] + 20 * player.velocity[2] - wrapBufferOffset ) * finalScale + finalYOffset )
+		love.graphics.line( ( player.position[1] - wrapOffset ) * finalScale + finalXOffset, ( player.position[2] - wrapOffset ) * finalScale + finalYOffset, ( player.position[1] + 20 * player.velocity[1] - wrapOffset ) * finalScale + finalXOffset, ( player.position[2] + 20 * player.velocity[2] - wrapOffset ) * finalScale + finalYOffset )
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
 		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
 	end
