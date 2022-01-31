@@ -106,4 +106,6 @@ This while not exactly warping the pixel or modifying it's position will still a
 
 I'm soooo close I just need to rework how I'm drawing to the back buffer and the viewport of the final buffer etc to accomodate the pixel shader which is not complete by any means either
 
-Ok now I'm on the right track... there are 8 mutually exclusive areas that must poll their polar opposites to see if there is a white pixel in it's offset position, if it finds one then theres an early exit and the pixel is displayeds
+Ok now I'm on the right track... there are 8 mutually exclusive areas that must poll their polar opposites to see if there is a white pixel in it's offset position, if it finds one then theres an early exit and the pixel is displayed
+
+I still need to find out where to set and clear the shader so only the playable area is warped and the HUD etc are spared
