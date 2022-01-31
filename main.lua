@@ -15,7 +15,7 @@ function love.load()
 	--debugInfo = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
-	--love.graphics.setShader( screenwrap )
+	love.graphics.setShader( screenwrap )
 
 	if debugInfo then
 		love.frame = 0
@@ -37,6 +37,12 @@ function love.load()
 
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
+
+	normalizedWidth = worldWidth / bufferWidth
+	normalizedHeight = worldHeight / bufferHeight
+
+	--screenwrap:send( "width", normalizedWidth )
+	--screenwrap:send( "height", normalizedHeight )
 
 	--generate a finalscale with which to draw the final buffer to the screen
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
@@ -126,7 +132,7 @@ end
 function love.draw()
 
 	love.graphics.setCanvas( buffer )
-
+	
 	love.graphics.clear( 1, 1, 1, 0 )
 
 	--draw all the objects in white

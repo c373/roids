@@ -103,3 +103,5 @@ I PROBABLY CAN USE A FRAGMENT SHADER FOR WRAPPING!!
 2nd if it isn't empty then draw it on the current pixel
 Also if there is something on the current pixel to draw don't do the check
 This while not exactly warping the pixel or modifying it's position will still achieve the desired result
+
+I'm soooo close I just need to rework how I'm drawing to the back buffer and the viewport of the final buffer etc to accomodate the pixel shader which is not complete by any means either
