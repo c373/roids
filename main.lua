@@ -12,12 +12,12 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	--debugInfo = true
+	--debug = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
 	love.graphics.setShader( screenwrap )
 
-	if debugInfo then
+	if debug then
 		love.frame = 0
 		love.profiler = require( "profile" )
 		love.profiler.start()
@@ -30,34 +30,18 @@ function love.load()
 	worldHeight = 480
 
 	--total renderable canvas size (backbuffer)
-	wrapOffset = 100
+	wrapOffset = worldHeight * 0.25
 	bufferWidth = worldWidth + wrapOffset * 2
 	bufferHeight = worldHeight + wrapOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
+	screenwrap:send( "width", worldWidth / bufferWidth )
+	screenwrap:send( "height", worldHeight / bufferHeight )
+	screenwrap:send( "offsetWidth", wrapOffset / bufferWidth )
+	screenwrap:send( "offsetHeight", wrapOffset / bufferHeight )
+
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
-
-	normalizedWidth = worldWidth / bufferWidth
-	normalizedHeight = worldHeight / bufferHeight
-
-	--screenwrap:send( "width", normalizedWidth )
-	--screenwrap:send( "height", normalizedHeight )
-
-	--generate a finalscale with which to draw the final buffer to the screen
-	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
-		finalScale = love.graphics.getWidth() / worldWidth
-	else
-		finalScale = love.graphics.getHeight() / worldHeight
-	end
-
-	--the final buffer that is the world and all wrapped zones drawn
-	--this buffer can be used to do final scaling and positioning of the final drawn image
-	final = love.graphics.newCanvas( worldWidth, worldHeight )
-
-	--center the final buffer on the screen
-	finalXOffset = ( love.graphics.getWidth() - ( worldWidth * finalScale ) ) * 0.5
-	finalYOffset = ( love.graphics.getHeight() - ( worldHeight * finalScale ) ) * 0.5
 
 	--center the player ship
 	player.position[1] = wrapOffset + ( worldWidth * 0.5 )
@@ -71,7 +55,7 @@ end
 
 function love.update( dt )
 
-	if debugInfo then
+	if debug then
 		love.frame = love.frame + 1
 
 		if love.frame % 100 == 0 then
@@ -166,25 +150,25 @@ function love.draw()
 
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.85 )
 
+	if debug then
+		love.graphics.setColor( 1, 0, 0, 1 )
+		love.graphics.rectangle( "line", wrapOffset, wrapOffset, worldWidth, worldHeight )
+	end
+
 	love.graphics.setColor( 1, 1, 1, 1 )
 
 	love.graphics.setCanvas()
 
-	love.graphics.setCanvas( final )
-
-	love.graphics.clear( 0, 0, 0, 1 )
-
 	--draw main canvas
-	love.graphics.draw( buffer, viewport, 0, 0 )
+	if debug then
+		love.graphics.draw( buffer, 0, 0 )
+	else
+		love.graphics.draw( buffer, viewport, 0, 0 )
+	end
 
-	love.graphics.setCanvas()
-
-	love.graphics.draw( final, finalXOffset, finalYOffset, 0, finalScale )
-
-	if debugInfo then
-		love.graphics.line( ( player.position[1] - wrapOffset ) * finalScale + finalXOffset, ( player.position[2] - wrapOffset ) * finalScale + finalYOffset, ( player.position[1] + 20 * player.velocity[1] - wrapOffset ) * finalScale + finalXOffset, ( player.position[2] + 20 * player.velocity[2] - wrapOffset ) * finalScale + finalYOffset )
-		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
+	if debug then
+		--love.graphics.print( love.report or "Please wait...", 0, 0 )
+		--love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
 	end
 
 end
