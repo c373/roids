@@ -12,10 +12,9 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	showDebugInfo = false
+	showDebugInfo = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
-	love.graphics.setShader( screenwrap )
 
 	if showDebugInfo then
 		love.frame = 0
@@ -43,7 +42,14 @@ function love.load()
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
 
-	final = love.graphics.newCanvas()
+	final = love.graphics.newCanvas( worldWidth, worldHeight )
+	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
+		finalScale = love.graphics.getWidth() / worldWidth
+	else
+		finalScale = love.graphics.getHeight() / worldHeight
+	end
+	finalX = ( love.graphics.getWidth() - worldWidth * finalScale ) * 0.5
+	finalY = ( love.graphics.getHeight() - worldHeight * finalScale ) * 0.5
 
 	--center the player ship
 	player.position[1] = wrapOffset + ( worldWidth * 0.5 )
@@ -118,6 +124,7 @@ end
 function love.draw()
 
 	love.graphics.setCanvas( buffer )
+	--love.graphics.setShader( screenwrap )
 	
 	love.graphics.clear( 1, 1, 1, 0 )
 
@@ -159,7 +166,8 @@ function love.draw()
 
 	love.graphics.setColor( 1, 1, 1, 1 )
 
-	love.graphics.setCanvas()
+	love.graphics.setCanvas( final )
+	love.graphics.clear( 0, 0, 0, 1 )
 
 	--draw main canvas
 	if showDebugInfo then
@@ -168,9 +176,14 @@ function love.draw()
 		love.graphics.draw( buffer, viewport, 0, 0 )
 	end
 
+	love.graphics.setCanvas()
+	love.graphics.setShader()
+	
+	love.graphics.draw( final, finalX, finalY, 0, finalScale )
+
 	if showDebugInfo then
-		--love.graphics.print( love.report or "Please wait...", 0, 0 )
-		--love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
+		love.graphics.print( love.report or "Please wait...", 0, 0 )
+		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
 	end
 
 end
