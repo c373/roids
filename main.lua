@@ -12,12 +12,12 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	--debug = true
+	showDebugInfo = false
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
 	love.graphics.setShader( screenwrap )
 
-	if debug then
+	if showDebugInfo then
 		love.frame = 0
 		love.profiler = require( "profile" )
 		love.profiler.start()
@@ -43,6 +43,8 @@ function love.load()
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
 
+	final = love.graphics.newCanvas()
+
 	--center the player ship
 	player.position[1] = wrapOffset + ( worldWidth * 0.5 )
 	player.position[2] = wrapOffset + ( worldHeight * 0.5 )
@@ -55,7 +57,7 @@ end
 
 function love.update( dt )
 
-	if debug then
+	if showDebugInfo then
 		love.frame = love.frame + 1
 
 		if love.frame % 100 == 0 then
@@ -150,7 +152,7 @@ function love.draw()
 
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.85 )
 
-	if debug then
+	if showDebugInfo then
 		love.graphics.setColor( 1, 0, 0, 1 )
 		love.graphics.rectangle( "line", wrapOffset, wrapOffset, worldWidth, worldHeight )
 	end
@@ -160,13 +162,13 @@ function love.draw()
 	love.graphics.setCanvas()
 
 	--draw main canvas
-	if debug then
+	if showDebugInfo then
 		love.graphics.draw( buffer, 0, 0 )
 	else
 		love.graphics.draw( buffer, viewport, 0, 0 )
 	end
 
-	if debug then
+	if showDebugInfo then
 		--love.graphics.print( love.report or "Please wait...", 0, 0 )
 		--love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
 	end
