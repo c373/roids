@@ -5,7 +5,7 @@ uniform float offsetHeight;
 
 bool check( vec4 sample )
 {
-	if ( sample.r != 0 && sample.g != 0 && sample.b != 0 && sample.a != 0 )
+	if ( sample.r == 1 && sample.g == 1 && sample.b == 1 && sample.a == 1 )
 		return true;
 	else
 		return false;
