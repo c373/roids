@@ -109,3 +109,13 @@ I'm soooo close I just need to rework how I'm drawing to the back buffer and the
 Ok now I'm on the right track... there are 8 mutually exclusive areas that must poll their polar opposites to see if there is a white pixel in it's offset position, if it finds one then theres an early exit and the pixel is displayed
 
 I still need to find out where to set and clear the shader so only the playable area is warped and the HUD etc are spared
+
+Well the warp shader is running pretty good now... I have another idea...
+
+T O O L I N G
+	
+	WHAT:	A simple program written for the love engine that will let me create meshes paint style to use in the asteroids game
+	HOW:	Grid based system where you can add or remove vertices and change the type (fan, list, strip) dynamically to see what they would look like, also exporting/importing functions duh
+
+	I can use this to make simple UI features as well that will scale with the screen vs the bitmap font format love uses by default...
+	Look into that as well to see if there are any vector text functions built into love
