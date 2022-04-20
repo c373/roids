@@ -4,6 +4,8 @@ require "bullet"
 require "models"
 require "utils"
 
+-- test
+
 local asteroids = {}
 
 local bullets = {}
