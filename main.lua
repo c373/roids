@@ -1,3 +1,4 @@
+-- comment
 require "asteroid"
 require "ship"
 require "bullet"
