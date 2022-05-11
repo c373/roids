@@ -28,4 +28,4 @@ Most of the planned features haven't been implemented
 
 ## Releases:
 * v0.1.0-alpha
-* v0.1.1-alpha
+* [v0.1.1-alpha](https://github.com/c373/roids/releases/tag/v0.1.1-alpha)
