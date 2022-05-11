@@ -25,5 +25,5 @@ Most of the planned features haven't been implemented
 * Start screen
 * etc.
 
-# Releases:
+## Releases:
 * v0.1.0-alpha
