@@ -89,20 +89,14 @@ function love.update( dt )
 		player:accel( dt )
 	end
 
+	precise = love.keyboard.isDown( "lshift" ) or love.keyboard.isDown( "rshift" )
+
 	if love.keyboard.isDown( "d" ) then
-		if love.keyboard.isDown( "lshift" ) or love.keyboard.isDown("rshift") then
-			player:rotate( "left", true, dt )
-		else
-			player:rotate( "left", false, dt )
-		end
+		player:rotate( "left", precise, dt )
 	end
 
 	if love.keyboard.isDown( "f" ) then
-		if love.keyboard.isDown( "s" ) then
-			player:rotate( "right", true, dt )
-		else
-			player:rotate( "right", false, dt )
-		end
+		player:rotate( "right", precise, dt )
 	end
 
 	if love.keyboard.isDown( "r" ) then
@@ -110,7 +104,7 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "return" ) then
---		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
+		--		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	player:update( dt )
@@ -172,7 +166,7 @@ function love.draw()
 	--love.graphics.rectangle( "line", finalX, finalY, worldWidth * finalScale, worldHeight * finalScale )
 
 	love.graphics.setShader()
-	
+
 	if showDebugInfo then
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
 		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
@@ -198,4 +192,4 @@ function love.keypressed( key, scancode, isrepeat )
 		bullets[#bullets + 1] = bullet:new( models.bullet, player.position, player.rotation, player.velocity )
 	end
 
- end
+end
