@@ -14,7 +14,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	showDebugInfo = true
+	--showDebugInfo = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
 
@@ -171,7 +171,7 @@ function love.draw()
 
 	--draw main canvas
 	love.graphics.draw( buffer, viewport, finalX, finalY, 0, finalScale )
-	love.graphics.rectangle( "line", finalX, finalY, worldWidth * finalScale, worldHeight * finalScale )
+	--love.graphics.rectangle( "line", finalX, finalY, worldWidth * finalScale, worldHeight * finalScale )
 
 	love.graphics.setShader()
 	
