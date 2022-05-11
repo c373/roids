@@ -11,7 +11,7 @@ RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next gene
 
 `J` - shoot
 
-*\* - hold down `S` for more precise movement*
+*\* hold down* `S` *for more precise movement*
 
 ## In Development
 Most of the planned features haven't been implemented
