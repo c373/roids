@@ -26,4 +26,4 @@ Most of the planned features haven't been implemented
 * etc.
 
 # Releases:
-* v0.1.0 Pre-alpha
+* v0.1.0-alpha
