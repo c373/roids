@@ -3,13 +3,13 @@
 RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next generation of gaming! Hold on to your as seats as you are transported to- Lol its just asteroids written in Lua for the Löve2d framework.
 
 ## Movement
-**`D:`** turn counter-clockwise `*`
+**`D`:** turn counter-clockwise \*
 
-**`F:`** turn clockwise `*`
+**`F`:** turn clockwise \*
 
-**`K:`** accelerate
+**`K`:** accelerate
 
-**`J:`** shoot
+**`J`:** shoot
 
 *\* - hold down **S** for more precise movement*
 
