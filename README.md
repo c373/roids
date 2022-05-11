@@ -1,6 +1,7 @@
-# RÖIDS
+![alien ufo](./assets/roids.svg)
 
-RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next generation of gaming! Hold on to your as seats as you are transported to- Lol its just asteroids written in Lua for the Löve2d framework.
+# RÖIDS
+RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next generation of gaming! Hold on to your seats as you are transported to- Lol its just asteroids written in Lua for the Löve2d framework.
 
 ## Movement Keys
 `D` - turn counter-clockwise \*
@@ -11,7 +12,11 @@ RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next gene
 
 `J` - shoot
 
-*\* hold down* `S` *for more precise movement*
+`Return ⏎` - spawn an asteroid
+
+*\* hold down* `Shift` *for more precise movement*
+
+`ESC` - to quit
 
 ## In Development
 Most of the planned features haven't been implemented
@@ -20,3 +25,7 @@ Most of the planned features haven't been implemented
 * UI
 * Start screen
 * etc.
+
+## Releases:
+* v0.1.0-alpha
+* v0.1.1-alpha
