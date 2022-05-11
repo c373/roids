@@ -110,7 +110,7 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "return" ) then
-		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
+--		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
 	end
 
 	player:update( dt )
