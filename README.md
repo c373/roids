@@ -15,7 +15,6 @@ RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next gene
 
 ## In Development
 Most of the planned features haven't been implemented
-### Missing
 * Collisions
 * HUD
 * UI
