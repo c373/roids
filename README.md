@@ -11,7 +11,7 @@ RÖIDS is an action packed, interstellar, shoot 'em up. Welcome to the next gene
 
 `J` - shoot
 
-`Return⏎` - Spawn an asteroid
+`Return ⏎` - Spawn an asteroid
 
 *\* hold down* `Shift` *for more precise movement*
 
@@ -24,3 +24,6 @@ Most of the planned features haven't been implemented
 * UI
 * Start screen
 * etc.
+
+# Releases:
+* v0.1.0 Pre-alpha
