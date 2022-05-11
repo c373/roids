@@ -4,8 +4,6 @@ require "bullet"
 require "models"
 require "utils"
 
--- test
-
 local asteroids = {}
 
 local bullets = {}
@@ -92,7 +90,7 @@ function love.update( dt )
 	end
 
 	if love.keyboard.isDown( "d" ) then
-		if love.keyboard.isDown( "s" ) then
+		if love.keyboard.isDown( "lshift" ) or love.keyboard.isDown("rshift") then
 			player:rotate( "left", true, dt )
 		else
 			player:rotate( "left", false, dt )
