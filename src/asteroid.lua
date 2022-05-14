@@ -30,7 +30,7 @@ function asteroid:update( dt )
 
 	self.position[1] = self.position[1] + self.posVel[1] * self.speed * dt
 	self.position[2] = self.position[2] + self.posVel[2] * self.speed * dt
-	
+
 	local rotationDelta = self.rotVel * dt
 	self.rotation = self.rotation + rotationDelta
 
@@ -43,7 +43,7 @@ function newAsteroidVertices( radiusRange )
 	local angleEaten = 0
 
 	local vertices = { 0, 0 }
-	
+
 	while angleEaten < 360 do
 
 		local radius = love.math.random( radiusRange.min, radiusRange.max )
