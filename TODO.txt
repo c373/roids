@@ -123,3 +123,9 @@ T O O L I N G
 R A N D O M  A S T E R O I D  C R E A T I O N
 
 	the creation of the asteroids is a little bugged... it will ALWAYS span the asteroids in the same locations each time the game is run, look into truly randomizing the location of new asteroids
+
+S H A D E R S  F O R  A N I M A T I O N
+	Permanence problem: I couldn't wrap my head around permanence of variables required for animation, such as the elapsed time of the animation
+	between draw calls...
+	I get it now, we would mantain the variables outside of the shader in the game code and send the value as a uniform variable to the shader
+	So when we kick off the animation we start the timer and upon each draw call send the current value to the shader

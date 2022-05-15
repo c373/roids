@@ -26,8 +26,7 @@ function love.load()
 	clearColor = { 0.1, 0.08, 0.1, 1 }
 
 	--playable world size
-	worldWidth = 480
-	worldHeight = 480
+	worldWidth, worldHeight = love.window.getMode()
 
 	--total renderable canvas size (backbuffer)
 	wrapOffset = worldHeight * 0.25
@@ -35,10 +34,14 @@ function love.load()
 	bufferHeight = worldHeight + wrapOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
+	-- send the size of the world as a uv relative to the total buffer size for sampling
 	screenwrap:send( "width", worldWidth / bufferWidth )
 	screenwrap:send( "height", worldHeight / bufferHeight )
+	-- currently the wrap shader is being applied before the final crop to the visible playing area
 	screenwrap:send( "offsetWidth", wrapOffset / bufferWidth )
 	screenwrap:send( "offsetHeight", wrapOffset / bufferHeight )
+	screenwrap:send( "dblOffsetWidth", ( wrapOffset / bufferWidth ) * 2 )
+	screenwrap:send( "dblOffsetHeight", ( wrapOffset / bufferHeight ) * 2 )
 
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
