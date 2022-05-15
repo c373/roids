@@ -8,7 +8,7 @@ uniform float dblOffsetHeight;
 // returns true if the sample pixel is fully white
 bool check( vec4 sample )
 {
-	if ( sample.r == 1 && sample.g == 1 && sample.b == 1 && sample.a == 1 )
+	if ( sample.a == 1 )
 		return true;
 	else
 		return false;
