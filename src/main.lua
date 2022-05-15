@@ -88,6 +88,7 @@ function love.update( dt )
 		end
 	end
 
+	-- handle player input
 	if love.keyboard.isDown( "k" ) then
 		player:accel( dt )
 	end
@@ -122,12 +123,13 @@ end
 function love.draw()
 
 	love.graphics.setCanvas( buffer )
-	love.graphics.setShader( screenwrap )
 	love.graphics.clear( clearColor )
 
 	--draw all the objects in white
 	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
+
+	love.graphics.setWireframe( true )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -145,29 +147,14 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
-	--draw all the black objects
-	love.graphics.setColor( clearColor )
-
-	for i = 1, #asteroids do
-		local a = asteroids[i]
-		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation, 0.9 )
-	end
-
-	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation, 0.75 )
-
-	if showDebugInfo then
-		love.graphics.setColor( 1, 0, 0, 1 )
-		love.graphics.rectangle( "line", wrapOffset, wrapOffset, worldWidth, worldHeight )
-	end
-
-	love.graphics.setColor( 1, 1, 1, 1 )
 
 	love.graphics.setCanvas()
 
-	--draw main canvas
-	love.graphics.draw( buffer, viewport, finalX, finalY, 0, finalScale )
-	--love.graphics.rectangle( "line", finalX, finalY, worldWidth * finalScale, worldHeight * finalScale )
+	love.graphics.setWireframe( false )
 
+	--draw main canvas
+	love.graphics.setShader( screenwrap )
+	love.graphics.draw( buffer, viewport, finalX, finalY, 0, finalScale )
 	love.graphics.setShader()
 
 	if showDebugInfo then
