@@ -119,3 +119,9 @@ T O O L I N G
 
 	I can use this to make simple UI features as well that will scale with the screen vs the bitmap font format love uses by default...
 	Look into that as well to see if there are any vector text functions built into love
+
+S H A D E R S  F O R  A N I M A T I O N
+	Permanence problem: I couldn't wrap my head around permanence of variables required for animation, such as the elapsed time of the animation
+	between draw calls...
+	I get it now, we would mantain the variables outside of the shader in the game code and send the value as a uniform variable to the shader
+	So when we kick off the animation we start the timer and upon each draw call send the current value to the shader
