@@ -37,9 +37,11 @@ function love.load()
 	-- send the size of the world as a uv relative to the total buffer size for sampling
 	screenwrap:send( "width", worldWidth / bufferWidth )
 	screenwrap:send( "height", worldHeight / bufferHeight )
-	-- currently the wrap shader is being applied before the final crop to the visible playing area so we need to send the buffer sizes as double
-	screenwrap:send( "offsetWidth", ( wrapOffset / bufferWidth ) * 2 )
-	screenwrap:send( "offsetHeight", ( wrapOffset / bufferHeight ) * 2 )
+	-- currently the wrap shader is being applied before the final crop to the visible playing area
+	screenwrap:send( "offsetWidth", wrapOffset / bufferWidth )
+	screenwrap:send( "offsetHeight", wrapOffset / bufferHeight )
+	screenwrap:send( "dblOffsetWidth", ( wrapOffset / bufferWidth ) * 2 )
+	screenwrap:send( "dblOffsetHeight", ( wrapOffset / bufferHeight ) * 2 )
 
 	--quad that represents the viewport of the main playable area
 	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
