@@ -127,11 +127,8 @@ function love.draw()
 	love.graphics.clear( 1, 0, 1, 1 )
 
 	love.graphics.setCanvas( buffer )
-	--love.graphics.clear( clearColor )
 	love.graphics.clear( 1, 1, 1, 0 )
-	love.graphics.setColor( 0, 0, 0, 1 )
-
---	love.graphics.setWireframe( true )
+	love.graphics.setColor( 1, 1, 1, 1 )
 
 	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
@@ -152,13 +149,17 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
-	love.graphics.setCanvas()
---	love.graphics.setWireframe( false )
+	love.graphics.setCanvas( buffer_2 )
+	love.graphics.clear( 1, 1, 1, 0 )
+	-- first pass for the outline
+	love.graphics.setShader( outline )
+	love.graphics.draw( buffer )
 
-	--draw main canvas
+	love.graphics.setCanvas()
+
+	-- second pass for the screenwrap
 	love.graphics.setShader( screenwrap )
-	love.graphics.draw( buffer, viewport, finalX, finalY, 0, finalScale )
-	love.graphics.setShader()
+	love.graphics.draw( buffer_2, viewport, finalX, finalY, 0, finalScale )
 
 	if showDebugInfo then
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
