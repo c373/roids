@@ -6,7 +6,7 @@ bullet = {
 	rotation = 0,
 	alive = false,
 	time = 0,
-	lifespan = 0.75
+	lifespan = 0.5
 }
 
 function bullet:new( model, position, rotation, vel )

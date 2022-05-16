@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	showDebugInfo = false
+	showDebugInfo = true
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
 	outline = love.graphics.newShader( "outline.fs" )
@@ -142,12 +142,13 @@ function love.draw()
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
-			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation,	lerp( 1, 0.25, b.time / b.lifespan ) )
+			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation )
 		end
 	end
 
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
+
 
 	love.graphics.setCanvas( buffer_2 )
 	love.graphics.clear( 1, 1, 1, 0 )
@@ -160,6 +161,14 @@ function love.draw()
 	-- second pass for the screenwrap
 	love.graphics.setShader( screenwrap )
 	love.graphics.draw( buffer_2, viewport, finalX, finalY, 0, finalScale )
+
+	if showDebugInfo then
+		love.graphics.push()
+		love.graphics.translate( -wrapOffset, -wrapOffset )
+		love.graphics.circle( "line", player.position[1], player.position[2], 1 )
+		love.graphics.circle( "line", player.position[1], player.position[2], 20 )
+		love.graphics.pop()
+	end
 
 	if showDebugInfo then
 		love.graphics.print( love.report or "Please wait...", 0, 0 )
