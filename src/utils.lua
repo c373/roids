@@ -62,7 +62,7 @@ end
 function normalize( vector )
 
 	local mag = math.sqrt( ( vector[1] * vector[1] ) + ( vector[2] * vector[2] ) )
-	
+
 	if mag == 0 then
 		return { 0, 0 }
 	end
@@ -90,6 +90,20 @@ function wrapPosition( vector, xMIN, xMAX, yMIN, yMAX )
 
 end
 
+function triangluatedVerticesToVertexColor( triangulated )
+
+	local vertexColorList = {}
+
+	for i = 1, #triangulated, 1 do
+		for j = 1, #triangulated[i], 2 do
+			table.insert( vertexColorList, { triangulated[i][j], triangulated[i][j+1], 0, 0, 1, 1, 1, 1 } )
+		end
+	end
+
+	return vertexColorList
+
+end
+
 function vertexListToVertexColorList( vertices )
 
 	local vertexColorList = {}
@@ -100,4 +114,13 @@ function vertexListToVertexColorList( vertices )
 
 	return vertexColorList
 
+end
+
+function printTable( aTable )
+	for index, data in ipairs( aTable ) do
+		print( index )
+		for key, value in pairs( data ) do
+			print( '\t', key, value )
+		end
+	end
 end

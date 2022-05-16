@@ -14,8 +14,8 @@ function asteroid:new( x, y )
 	self.__index = self
 	setmetatable( a, asteroid )
 
-	local vertices = newAsteroidVertices( { min = 15, max = 30 } )
-	a.model = love.graphics.newMesh( vertexListToVertexColorList( vertices ), "fan", "dynamic" )
+	local vertices = newAsteroidVertices( { min = 15, max = 22.5 } )
+	a.model = love.graphics.newMesh( triangluatedVerticesToVertexColor( vertices ), "triangles", "dynamic" )
 	a.position = { x, y }
 	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
 	a.speed = math.random( 0, 300 )
@@ -38,11 +38,11 @@ end
 
 function newAsteroidVertices( radiusRange )
 
-	local angleRange = { min = 25, max = 50 }
+	local angleRange = { min = 15, max = 60 }
 
 	local angleEaten = 0
 
-	local vertices = { 0, 0 }
+	local vertices = {}
 
 	while angleEaten < 360 do
 
@@ -68,9 +68,6 @@ function newAsteroidVertices( radiusRange )
 
 	end
 
-	vertices[#vertices + 1] = vertices[3]
-	vertices[#vertices + 1] = vertices[4]
-
-	return vertices
+	return love.math.triangulate( vertices )
 
 end

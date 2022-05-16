@@ -15,6 +15,7 @@ function love.load()
 	showDebugInfo = false
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
+	outline = love.graphics.newShader( "outline.fs" )
 
 	if showDebugInfo then
 		love.frame = 0
@@ -33,6 +34,7 @@ function love.load()
 	bufferWidth = worldWidth + wrapOffset * 2
 	bufferHeight = worldHeight + wrapOffset * 2
 	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
+	buffer_2 = love.graphics.newCanvas( bufferWidth, bufferHeight )
 
 	-- send the size of the world as a uv relative to the total buffer size for sampling
 	screenwrap:send( "width", worldWidth / bufferWidth )
@@ -122,14 +124,17 @@ end
 
 function love.draw()
 
-	love.graphics.setCanvas( buffer )
-	love.graphics.clear( clearColor )
+	love.graphics.clear( 1, 0, 1, 1 )
 
-	--draw all the objects in white
+	love.graphics.setCanvas( buffer )
+	--love.graphics.clear( clearColor )
+	love.graphics.clear( 1, 1, 1, 0 )
+	love.graphics.setColor( 0, 0, 0, 1 )
+
+--	love.graphics.setWireframe( true )
+
 	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
-
-	love.graphics.setWireframe( true )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
@@ -147,10 +152,8 @@ function love.draw()
 	--main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
-
 	love.graphics.setCanvas()
-
-	love.graphics.setWireframe( false )
+--	love.graphics.setWireframe( false )
 
 	--draw main canvas
 	love.graphics.setShader( screenwrap )
