@@ -24,7 +24,8 @@ function love.load()
 	end
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
-	clearColor = { 0.1, 0.08, 0.1, 1 }
+	clearColor = { 0.125, 0.153, 0.153, 1 }
+	white = { 0.824, 0.839, 0.847, 1 }
 
 	--playable world size
 	worldWidth, worldHeight = love.window.getMode()
@@ -124,11 +125,11 @@ end
 
 function love.draw()
 
-	love.graphics.clear( 1, 0, 1, 1 )
+	love.graphics.clear( clearColor )
 
 	love.graphics.setCanvas( buffer )
 	love.graphics.clear( 1, 1, 1, 0 )
-	love.graphics.setColor( 1, 1, 1, 1 )
+	love.graphics.setColor( white )
 
 	--draw the asteroids
 	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
