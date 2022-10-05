@@ -12,7 +12,7 @@ local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
 
 function love.load()
 
-	showDebugInfo = true
+	showDebugInfo = false
 
 	screenwrap = love.graphics.newShader( "screenwrap.fs" )
 	outline = love.graphics.newShader( "outline.fs" )
