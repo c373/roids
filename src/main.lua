@@ -1,72 +1,98 @@
 require "asteroid"
 require "ship"
 require "bullet"
-require "models"
+local models = require "models"
 require "utils"
 
+--------------------------------------------------------------------------------
+--																			  --
+--									GLOBALS									  --
+--																			  --
+--------------------------------------------------------------------------------
+
 local asteroids = {}
-
 local bullets = {}
+local player = ship:new( love.graphics.newMesh(models.player, "fan", "dynamic"), true )
 
-local player = ship:new( models.playerShip, true, { 0, 0 }, 0, { 0, 0 } )
+local COLORS = {
+	BLACK = { 0.125, 0.153, 0.153, 1 },
+	WHITE = { 0.824, 0.839, 0.847, 1 }
+}
+
+--------------------------------------------------------------------------------
+--																			  --
+--									INIT									  --
+--																			  --
+--------------------------------------------------------------------------------
 
 function love.load()
 
-	showDebugInfo = false
+	showDebugInfo = true
 
-	screenwrap = love.graphics.newShader( "screenwrap.fs" )
-	outline = love.graphics.newShader( "outline.fs" )
+	screenwrap = love.graphics.newShader( "shaders/screenwrap.fs" )
+	outline = love.graphics.newShader( "shaders/outline.fs" )
 
 	if showDebugInfo then
 		love.frame = 0
 		love.profiler = require( "profile" )
 		love.profiler.start()
+		love.graphics.setWireframe(true)
 	end
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
-	clearColor = { 0.125, 0.153, 0.153, 1 }
-	white = { 0.824, 0.839, 0.847, 1 }
 
-	--playable world size
+	-- playable world size
 	worldWidth, worldHeight = love.window.getMode()
 
-	--total renderable canvas size (backbuffer)
-	wrapOffset = worldHeight * 0.25
-	bufferWidth = worldWidth + wrapOffset * 2
-	bufferHeight = worldHeight + wrapOffset * 2
-	buffer = love.graphics.newCanvas( bufferWidth, bufferHeight )
-	buffer_2 = love.graphics.newCanvas( bufferWidth, bufferHeight )
+	-- total renderable canvas size (backbuffer)
+	bufferPadding = worldHeight * 0.25
+	bufferWidth = worldWidth + bufferPadding * 2
+	bufferHeight = worldHeight + bufferPadding * 2
 
+	drawBufferMain = love.graphics.newCanvas( bufferWidth, bufferHeight )
+	drawBufferSec = love.graphics.newCanvas( bufferWidth, bufferHeight )
+
+	-- set necesary parameters for the screenwrap shader
 	-- send the size of the world as a uv relative to the total buffer size for sampling
 	screenwrap:send( "width", worldWidth / bufferWidth )
 	screenwrap:send( "height", worldHeight / bufferHeight )
+
 	-- currently the wrap shader is being applied before the final crop to the visible playing area
-	screenwrap:send( "offsetWidth", wrapOffset / bufferWidth )
-	screenwrap:send( "offsetHeight", wrapOffset / bufferHeight )
-	screenwrap:send( "dblOffsetWidth", ( wrapOffset / bufferWidth ) * 2 )
-	screenwrap:send( "dblOffsetHeight", ( wrapOffset / bufferHeight ) * 2 )
+	screenwrap:send( "offsetWidth", bufferPadding / bufferWidth )
+	screenwrap:send( "offsetHeight", bufferPadding / bufferHeight )
+	screenwrap:send( "dblOffsetWidth", ( bufferPadding / bufferWidth ) * 2 )
+	screenwrap:send( "dblOffsetHeight", ( bufferPadding / bufferHeight ) * 2 )
 
-	--quad that represents the viewport of the main playable area
-	viewport = love.graphics.newQuad( wrapOffset, wrapOffset, worldWidth, worldHeight, bufferWidth, bufferHeight )
+	-- quad that represents the viewport of the main playable area
+	viewport = love.graphics.newQuad( bufferPadding, bufferPadding, worldWidth, worldHeight, bufferWidth, bufferHeight )
 
+	-- determine the final scale the viewport should be drawn at so that the
+	-- longest dimension of the world is drawn edge to edge on the window
 	if worldWidth / love.graphics.getWidth() > worldHeight / love.graphics.getHeight() then
-		finalScale = love.graphics.getWidth() / worldWidth
+		viewportScale = love.graphics.getWidth() / worldWidth
 	else
-		finalScale = love.graphics.getHeight() / worldHeight
+		viewportScale = love.graphics.getHeight() / worldHeight
 	end
 
-	finalX = ( love.graphics.getWidth() - worldWidth * finalScale ) * 0.5
-	finalY = ( love.graphics.getHeight() - worldHeight * finalScale ) * 0.5
+	-- determine the final required offset to position the viewport on the
+	-- center of the screen (will zero out unless the world is smaller than the
+	-- window size)
+	viewportPosX = ( love.graphics.getWidth() - worldWidth * viewportScale ) * 0.5
+	viewportPosY = ( love.graphics.getHeight() - worldHeight * viewportScale ) * 0.5
 
-	--center the player ship
-	player.position[1] = wrapOffset + ( worldWidth * 0.5 )
-	player.position[2] = wrapOffset + ( worldHeight * 0.5 )
+	-- center the player ship
+	-- player.position[1] = bufferPadding + ( worldWidth * 0.5 )
+	-- player.position[2] = bufferPadding + ( worldHeight * 0.5 )
+	player.position[1] = bufferWidth * 0.5
+	player.position[2] = bufferHeight * 0.5
 
 end
 
-------------------------------------------------------------
---	U P D A T E
-------------------------------------------------------------
+--------------------------------------------------------------------------------
+--																			  --
+--									UPDATE									  --
+--																			  --
+--------------------------------------------------------------------------------
 
 function love.update( dt )
 
@@ -81,13 +107,13 @@ function love.update( dt )
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
-		wrapPosition( asteroids[i].position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
+		wrapPosition( asteroids[i].position, bufferPadding, worldWidth, bufferPadding, worldHeight )
 	end
 
 	for i = #bullets, 1, -1 do
 		if bullets[i].alive then
 			bullets[i]:update( dt )
-			wrapPosition( bullets[i].position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
+			wrapPosition( bullets[i].position, bufferPadding, worldWidth, bufferPadding, worldHeight )
 		end
 	end
 
@@ -110,36 +136,34 @@ function love.update( dt )
 		hit = false
 	end
 
-	if love.keyboard.isDown( "return" ) then
-		--		asteroids[#asteroids + 1] = asteroid:new( math.random( 0, love.graphics.getWidth() ), math.random( 0, love.graphics.getHeight() ) )
-	end
-
 	player:update( dt )
-	wrapPosition( player.position, wrapOffset, worldWidth + wrapOffset, wrapOffset, worldHeight + wrapOffset )
+	wrapPosition( player.position, bufferPadding, worldWidth, bufferPadding, worldHeight )
 
 end
 
-------------------------------------------------------------
---	D R A W
-------------------------------------------------------------
+--------------------------------------------------------------------------------
+--																			  --
+--									DRAW									  --
+--																			  --
+--------------------------------------------------------------------------------
 
 function love.draw()
+	love.graphics.clear( COLORS.BLACK )
 
-	love.graphics.clear( clearColor )
-
-	love.graphics.setCanvas( buffer )
+	-- FIRST PASS:
+	-- Sets up to draw to the first back buffer
+	-- Clears the whole buffer to zero alpha (transparent)
+	-- Draws all the objects as normal with white color
+	love.graphics.setCanvas( drawBufferMain )
 	love.graphics.clear( 1, 1, 1, 0 )
-	love.graphics.setColor( white )
-
-	--draw the asteroids
-	if hit then love.graphics.setColor( 1, 0, 0, 1 ) end
+	love.graphics.setColor( COLORS.WHITE )
 
 	for i = 1, #asteroids do
 		local a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
 
-	--draw all bullets
+	-- draw all bullets
 	for i = 1, #bullets do
 		if bullets[i].alive then
 			local b = bullets[i]
@@ -147,25 +171,36 @@ function love.draw()
 		end
 	end
 
-	--main ship model
+	-- main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
 
-	love.graphics.setCanvas( buffer_2 )
+	--  SECOND PASS:
+	-- Sets up to draw to a second back buffer
+	-- Clears the whole buffer to zero alpha (transparent)
+	-- Sets the active shader to the outline shader
+	-- Draws the first buffer applying the shader
+	love.graphics.setCanvas( drawBufferSec )
 	love.graphics.clear( 1, 1, 1, 0 )
-	-- first pass for the outline
 	love.graphics.setShader( outline )
-	love.graphics.draw( buffer )
+	love.graphics.draw( drawBufferMain )
 
+
+	-- THIRD (FINAL) PASS:
+	-- Sets the canvas to the screen
+	-- Sets the active shader to the screenwrap shader
+	-- Draws the second buffer to the screen with proper viewport and offsets
 	love.graphics.setCanvas()
-
-	-- second pass for the screenwrap
 	love.graphics.setShader( screenwrap )
-	love.graphics.draw( buffer_2, viewport, finalX, finalY, 0, finalScale )
+	-- draw the second buffer, after all other passes, to the screen
+	-- only the portion contained in the viewport quad
+	-- at viewportPosX, viewportPosY and scaled to viewportScale
+	love.graphics.draw( drawBufferSec, viewport, 0, 0, 0, viewportScale )
+
 
 	if showDebugInfo then
 		love.graphics.push()
-		love.graphics.translate( -wrapOffset, -wrapOffset )
+		love.graphics.translate( -bufferPadding, -bufferPadding )
 		love.graphics.circle( "line", player.position[1], player.position[2], 1 )
 		love.graphics.circle( "line", player.position[1], player.position[2], 20 )
 		love.graphics.pop()
@@ -178,9 +213,11 @@ function love.draw()
 
 end
 
-------------------------------------------------------------
---	C A L L B A C K S
-------------------------------------------------------------
+--------------------------------------------------------------------------------
+--																			  --
+--								   CALLBACKS								  --
+--																			  --
+--------------------------------------------------------------------------------
 
 function love.keypressed( key, scancode, isrepeat )
 
@@ -193,7 +230,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "j" then
-		bullets[#bullets + 1] = bullet:new( models.bullet, player.position, player.rotation, player.velocity )
+		bullets[#bullets + 1] = bullet:new( love.graphics.newMesh(models.bullet, "fan", "dynamic"), player.position, player.rotation, player.velocity )
 	end
 
 end

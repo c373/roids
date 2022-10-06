@@ -12,15 +12,15 @@ ship = {
 	preciseRotationSpeed = 1.57
 }
 
-function ship:new( model, player, position, rotation, vel )
+function ship:new( model, player, pos, rotation, vel )
 
 	local s = {}
 	self.__index = self
 	setmetatable( s, ship )
 
-	s.model = model or models.playerShip
+	s.model = model
 	s.player = player or false
-	s.position = position or { 0, 0 }
+	s.position = pos or { 0, 0 }
 	s.rotation = rotation or 0
 	s.direction = { 0, -1 }
 	s.velocity = vel or { 0, 0 }

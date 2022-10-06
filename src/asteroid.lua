@@ -9,20 +9,20 @@ asteroid.rotVel = 0
 
 function asteroid:new( x, y )
 
-	local a = {}
+	local o = {}
 
 	self.__index = self
-	setmetatable( a, asteroid )
+	setmetatable( o, asteroid )
 
 	local vertices = newAsteroidVertices( { min = 15, max = 22.5 } )
-	a.model = love.graphics.newMesh( triangluatedVerticesToVertexColor( vertices ), "triangles", "dynamic" )
-	a.position = { x, y }
-	a.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
-	a.speed = math.random( 0, 300 )
-	a.rotation = math.random( 0, 6.28 )
-	a.rotVel = math.random( -3.14, 3.14 )
+	o.model = love.graphics.newMesh( triangluatedVerticesToVertexColor( vertices ), "triangles", "dynamic" )
+	o.position = { x, y }
+	o.posVel = { math.random( -1, 1 ), math.random( -1, 1 ) }
+	o.speed = math.random( 0, 300 )
+	o.rotation = math.random( 0, 6.28 )
+	o.rotVel = math.random( -3.14, 3.14 )
 
-	return a
+	return o
 
 end
 

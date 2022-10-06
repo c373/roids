@@ -74,18 +74,18 @@ function normalize( vector )
 
 end
 
-function wrapPosition( vector, xMIN, xMAX, yMIN, yMAX )
+function wrapPosition( pos, xMin, xOffset, yMin, yOffset )
 
-	if vector[1] < xMIN then
-		vector[1] = vector[1] + xMAX - xMIN
-	elseif vector[1] > xMAX then
-		vector[1] = vector[1] - xMAX + xMIN
+	if pos[1] < xMin then
+		pos[1] = pos[1] + xOffset
+	elseif pos[1] > xOffset + xMin then
+		pos[1] = pos[1] - xOffset
 	end
 
-	if vector[2] < yMIN then
-		vector[2] = vector[2] + yMAX - yMIN
-	elseif vector[2] > yMAX then
-		vector[2] = vector[2] - yMAX + yMIN
+	if pos[2] < yMin then
+		pos[2] = pos[2] + yOffset
+	elseif pos[2] > yOffset + yMin then
+		pos[2] = pos[2] - yOffset
 	end
 
 end

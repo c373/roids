@@ -5,7 +5,7 @@ uniform float offsetHeight;
 uniform float dblOffsetWidth;
 uniform float dblOffsetHeight;
 
-// returns true if the sample pixel is fully white
+// returns true if the sample pixel has a full alpha value
 bool check( vec4 sample )
 {
 	if ( sample.a == 1 )
