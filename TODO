@@ -1,0 +1,241 @@
+P R O C E D U R A L    C R E A T I O N    O F    A S T E R O I D S
+
+	vertices concentric to the origin (0,0) and all within a specified range of
+	the center: minRadius < radius < maxRadius
+	angle between vertices is: minAngle < angle < maxAngle
+
+	triangulate the polygon and add to the table of asteroids
+
+	all asteroid creation will take place in a seperate thread and only as
+	needed to avoid dropping the frame rate of the main game loop - UM NO LOL
+
+	asteroids will be created outside the playable space but will be given a
+	velocity depending on the side they are created on to bring them into
+	playable - TODO
+
+	large asteroids when shot will be split into 2 smaller asteroids
+		- consider using an algorithm to divide the larger asteroid by it's
+		  vertices
+		- the split will just be a list of vertices along which to divide
+		  the asteroid the first will be the one nearest the collision and
+		  then either the center or, using a ray derivitive of the
+		  projectile's velocity, generate a new vertex along the ray with
+		  some deviation and about midway between the intial vertex and the
+		  final vertex which is the vertex nearest the collision of the ray
+		  on the far side of the asteroid, the second collision on the
+		  polygon as the ray exits
+
+		OR
+
+		- just create two smaller asteroids of abritary shapes lol
+
+
+E F F I C I E N T    A S T E R O I D    D E S T R U C T I O N    A N D
+C R E A T I O N
+
+	- avoid using table.remove() as it is a costly method
+	- instead have two tables one with all the asteroid objects and the other
+	  with a list of dead asteroids
+	- when an asteroid is destroyed mark it as dead and available for the next
+	  time we need to create an asteroid
+
+	  NEEDS LOTS OF WORK - INCOMPLETE
+
+
+S M O O T H I N G    O U T    T H E    W R A P    F E A T U R E 
+
+T H E    P O W E R    O F    M E S H E S - FAILS
+
+	- use the power of meshes to render all eight copies of each object...
+	- create all copies of objects in one mesh to render all at once as a list
+	  of triangles
+
+LOL JK THE MESH IDEA DOESN'T WORK... ALL TRIANGLES ARE DRAWN ROTATED AROUND THE
+MESH'S MAIN ORIGIN
+
+T H E    P O W E R    O F    S H A D E R S - FAIL?PASS?
+
+		- shaders though?? :wink:wink:
+		- here's the basic idea, create a canvas, off render target, where
+		  you'll draw all the game objects to
+		- now we're only going to draw a portion of the canvas to the screen as
+		  the entire playable area with a pre generated quad
+		- the reason is that now we can use a custom pixel shader to wrap all
+		  graphics when the renderer attempts to draw something outside of the
+		  quad we are using for the world view
+		- this way we will have a section of the canvas all the way around that
+		  which upon drawing to will automatically draw to the opposite side of
+		  the screen offset by position
+		- naturally to ensure we can see all game objects at any given time we
+		  will wrap all objects positions according to the dimensions of the
+		  world view quad
+		- this solves the issue of having objects abruptly teleport to the other
+		  side of the screen when out of bounds
+		- the pixel shader will ensure that as the object passes out of bounds
+		  it's graphics are smoothly wrapped to the other side of the screen
+		- the other advantage is that now with a bit of work we can also define
+		  a set world size and just scale according to the user's display size
+		  to ensure a consistent experience across devices
+
+LOL SO THE FRAGMENT SHADER THING DIDN'T WORK EITHER (FRAG SHADERS CAN'T CHANGE
+THE POSITION OF A PIXEL...)
+
+
+T H E    P O W E R    O F    O F F - R E N D E R    T A R G E T S    ( F R A M E
+B U F F E R S ) - PASS
+
+	- this one works lol (implemented and confirmed)
+	- total # of draw calls is:
+
+	  n (number of objects) + 8 (canvas wrapzone calls)
+
+	  VS
+
+	  n (number of objects) * 8 (one for each of the wrap cases)
+
+	- we draw all objects to a canvas (buffer) that is larger than the actual
+	  playable area by a constant value on all sides
+	- once all objects are drawn we split up the buffer zone into 8 individual
+	  sections that will be drawn in their diametrically opposed position
+	  overlapping the main playable area
+
+	-------------------------
+	| TL |     TOP     | TR |		topLeft > bottomRight (of playable area)
+	-------------------------		top > bottom (of playable area)
+	|    |             |    |		topRight > bottomLeft (of playable area)
+	| L  |    PLAY     | R  |		left > right (of playable area)
+	|    |             |    |		right > left (of playable area)
+	-------------------------		bottomLeft > topRight (of playable area)
+	| BL |    BOTTOM   | BR |		bottom > top (of playable area)
+	-------------------------		bottomRight > topLeft (of playable area)
+
+	- after the main buffer and all overlapping wrap zones are drawn to the
+	  final buffer we draw this final buffer to the screen
+	- general positioning and scaling can now be done on the final buffer as
+	  needed
+	- using this method of wrapping the graphics along with a method to wrap
+	  objects positions according to the world size we obtain sweet sweet smooth
+	  wrap transitions
+	- NOTE: the buffer zone offset must be larger than the largest object in
+	  play to avoid clipping (when the object is out of bounds of the initial
+	  main canvas before being positionally wrapped it will show up as clipping
+	  when wrapped) 
+
+	- ALSO! The next step is to make this method extensible by generalizing it
+	  for different sized screens... although I think I'll keep it the same for
+	  this game since I don't want screen size to disrupt gameplay balance
+
+C O L L I S I O N    D E T E C T I O N    O N    W R A P S
+
+	WHAT: an idea to detect and resolve collisions of asteroids on the portion
+	of the asteroid that is wrapped around to the other side of the screen
+
+	WHY IT'S NEEDED: asteroid's collision bodies aren't wrapped smoothly like
+	the graphics... the collision body is wrapped abrutly once the center
+	(position of the asteroid) goes out of bounds
+
+	HOW:
+		- each asteroid will need a size assigned to it that is just the length
+		  of the vertex furthest from the center of the asteroid
+		- we will use this value to determine when we need to do the more
+		  complex collision detection of asteroids
+		- when the distance of the asteroids position to any one of the bound
+		  edges is less than or equal to this size value then we need to perform
+		  additional collision detection with modified position values for all
+		  the asteroid's vertices
+		- we can modify the collision detection algorithm to take 4 additional
+		  values, the distances from each of the edges (top, bottom, left,
+		  right) when these fall below the size of the asteroid being tested, we
+		  will pass -1 when they don't to avoid unnecessary collision checks
+		- this way each asteroid will have it's main collision detection based
+		  on it's real position and up to 3 additional collision checks with
+		  vertices offset to correspond to the graphical representation of the
+		  asteroid when it's wrapped on to the other edges of the screen
+
+C O L L I S I O N    D E T E C T I O N    T Y P E    C H A N G E
+
+	- need to create a polygon vs polygon collision detection that will be
+	  optimized by using a hash map to limit calls to the algo
+	- consider using meshes to hold all the collision information... you can
+	  then detect collisions with the resulting list of triangles
+	- YESSSS I will use the seperate axis theorem to detect collisions between
+	  triangles for each oject... (list of vertices from each object)
+
+F I N A L    S C A L E    G E N E R A L I Z A T I O N
+
+	- determine base models assuming 1920x1080
+	- models should be an object that will initialize flywheel models based on a
+	  value derived from the ratio of FULL HD resolution to actual device
+	  resolution
+	- oop implementation to be able to dynamically create the models based on
+	  the device resolution keeping all the ratios the same
+	- this will give the same native look on all resolution
+
+
+
+S M O O T H I N G    O U T    T H E    W R A P    F E A T U R E    P T    2
+
+I PROBABLY CAN USE A FRAGMENT SHADER FOR WRAPPING!!
+
+1st within a certain range from each designated edge check the value of the
+pixel offset by the final buffer screen size
+
+2nd if it isn't empty then draw it on the current pixel 
+
+Also if there is something on the current pixel to draw don't do the check
+
+This while not exactly warping the pixel or modifying it's position will still
+achieve the desired result
+
+I'm soooo close I just need to rework how I'm drawing to the back buffer and the
+viewport of the final buffer etc to accomodate the pixel shader which is not
+complete by any means either
+
+Ok now I'm on the right track... there are 8 mutually exclusive areas that must
+poll their polar opposites to see if there is a white pixel in it's offset
+position, if it finds one then theres an early exit and the pixel is displayed
+
+I still need to find out where to set and clear the shader so only the playable
+area is warped and the HUD etc are spared
+
+The fix invovled clearing the screen to a transparent color (alpha = 0), then
+drawing all the objects on this clear background. A second pass will then draw
+to a seperate buffer the first but using an outline shader
+The third pass will be to draw to the screen scaled appropriately
+
+Well the wrap shader is running pretty good now... I have another idea... tools
+
+
+T O O L I N G
+	
+	WHAT:	A simple program written for the love engine that will let me create
+	meshes paint style to use in the asteroids game
+
+	HOW:	Grid based system where you can add or remove vertices and change
+	the type (fan, list, strip) dynamically to see what they would look like,
+	also exporting/importing functions duh
+
+	I can use this to make simple UI features as well that will scale with the
+	screen vs the bitmap font format love uses by default... Look into that as
+	well to see if there are any vector text functions built into love
+
+
+R A N D O M    A S T E R O I D    C R E A T I O N 
+
+	the creation of the asteroids is a little bugged... it will ALWAYS span the
+	asteroids in the same locations each time the game is run, look into truly
+	randomizing the location of new asteroids
+
+
+S H A D E R S    F O R    A N I M A T I O N 
+
+	Permanence problem: I couldn't wrap my head around permanence of variables
+	required for animation, such as the elapsed time of the animation between
+	draw calls... I get it now, we would mantain the variables outside of the
+	shader in the game code and send the value as a uniform variable to the
+	shader So when we kick off the animation we start the timer and upon each
+	draw call send the current value to the shader
+
+	CORRECTION! You send new uniform values to the shader as needed, these
+	shader::send calls should NEVER be in the main update loop to occur on every
+	frame and DEFINITELY not in the draw loop
