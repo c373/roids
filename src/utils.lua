@@ -116,6 +116,12 @@ function vertexListToVertexColorList( vertices )
 
 end
 
+function randomPos( xmin, ymin, xmax, ymax )
+
+	return love.math.random( xmin, xmax ), love.math.random( ymin, ymax )
+
+end
+
 function printTable( aTable )
 	for index, data in ipairs( aTable ) do
 		print( index )

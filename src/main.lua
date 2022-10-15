@@ -27,7 +27,7 @@ local COLORS = {
 
 function love.load()
 
-	showDebugInfo = true
+	showDebugInfo = false
 
 	screenwrap = love.graphics.newShader( "shaders/screenwrap.fs" )
 	outline = love.graphics.newShader( "shaders/outline.fs" )
@@ -48,6 +48,14 @@ function love.load()
 	bufferPadding = worldHeight * 0.25
 	bufferWidth = worldWidth + bufferPadding * 2
 	bufferHeight = worldHeight + bufferPadding * 2
+
+	-- real world limits
+	worldLimits = {
+		LEFT = bufferPadding,
+		TOP = bufferPadding,
+		RIGHT = worldWidth + bufferPadding,
+		BOTTOM = worldHeight + bufferPadding
+	}
 
 	drawBufferMain = love.graphics.newCanvas( bufferWidth, bufferHeight )
 	drawBufferSec = love.graphics.newCanvas( bufferWidth, bufferHeight )
@@ -231,6 +239,17 @@ function love.keypressed( key, scancode, isrepeat )
 
 	if key == "j" then
 		bullets[#bullets + 1] = bullet:new( love.graphics.newMesh(models.bullet, "fan", "dynamic"), player.position, player.rotation, player.velocity )
+	end
+
+	if key == "h" then
+		player.position = {
+			randomPos(
+				worldLimits.LEFT,
+				worldLimits.TOP,
+				worldLimits.RIGHT,
+				worldLimits.BOTTOM
+			)
+		}
 	end
 
 end

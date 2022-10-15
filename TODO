@@ -239,3 +239,14 @@ S H A D E R S    F O R    A N I M A T I O N
 	CORRECTION! You send new uniform values to the shader as needed, these
 	shader::send calls should NEVER be in the main update loop to occur on every
 	frame and DEFINITELY not in the draw loop
+
+H Y P E R S P A C E    F U N C T I O N 
+
+	From a comment on steam about the hyperspace instant death feature:
+
+	It looks like the exact odds are: choose a random even number from 0-62,
+	explode if random_number >= number_of_asteroids + 44. So, looks like
+	hyperspace should never randomly explode if there are at least 19 asteroids
+	on the screen. Anything less, and there's a chance. But that's just
+	eyeballing the code.
+
