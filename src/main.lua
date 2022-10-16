@@ -1,7 +1,7 @@
+local models = require "models"
 require "asteroid"
 require "ship"
 require "bullet"
-local models = require "models"
 require "utils"
 
 --------------------------------------------------------------------------------
@@ -26,9 +26,6 @@ local COLORS = {
 --------------------------------------------------------------------------------
 
 function love.load()
-
-	showDebugInfo = false
-	printProfiler = false
 
 	screenwrap = love.graphics.newShader( "shaders/screenwrap.fs" )
 	outline = love.graphics.newShader( "shaders/outline.fs" )
@@ -97,10 +94,6 @@ function love.load()
 
 
 	-- DEBUG
-	love.frame = 0
-	love.profiler = require( "lib.profile" )
-	love.profiler.start()
-
 	if bufferWidth / love.graphics.getWidth() > bufferHeight / love.graphics.getHeight() then
 		debugScale = love.graphics.getWidth() / bufferWidth
 	else
@@ -119,15 +112,6 @@ end
 --------------------------------------------------------------------------------
 
 function love.update( dt )
-
-	if showDebugInfo then
-		love.frame = love.frame + 1
-
-		if love.frame % 100 == 0 then
-			love.report = love.profiler.report( 20 )
-			love.profiler.reset()
-		end
-	end
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
@@ -179,9 +163,13 @@ end
 --																			  --
 --------------------------------------------------------------------------------
 
+local a, b -- reuse tables to draw asteroids and bullets
 function love.draw()
 	love.graphics.clear( COLORS.BLACK )
 
+	if showDebugInfo then
+		love.graphics.setWireframe( true )
+	end
 	-- FIRST PASS:
 	-- Sets up to draw to the first back buffer
 	-- Clears the whole buffer to zero alpha (transparent)
@@ -191,14 +179,14 @@ function love.draw()
 	love.graphics.setColor( COLORS.WHITE )
 
 	for i = 1, #asteroids do
-		local a = asteroids[i]
+		a = asteroids[i]
 		love.graphics.draw( a.model, a.position[1], a.position[2], a.rotation )
 	end
 
 	-- draw all bullets
 	for i = 1, #bullets do
 		if bullets[i].alive then
-			local b = bullets[i]
+			b = bullets[i]
 			love.graphics.draw( b.model, b.position[1], b.position[2], b.rotation )
 		end
 	end
@@ -227,16 +215,7 @@ function love.draw()
 		love.graphics.setShader( screenwrap )
 
 		love.graphics.draw( drawBufferMain, debugPosX, debugPosY, 0, debugScale )
-
-		if printProfiler then
-			love.graphics.print( love.report or "Please wait...", 0, 0 )
-			love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
-		end
-
-		love.graphics.setWireframe( true )
 		return
-	else
-		love.graphics.setWireframe( false )
 	end
 
 	--  SECOND PASS:
@@ -304,16 +283,6 @@ function love.keypressed( key, scancode, isrepeat )
 			showDebugInfo = false
 		else
 			showDebugInfo = true
-		end
-	end
-
-	if key == "p" then
-		if showDebugInfo then
-			if printProfiler then
-				printProfiler = false
-			else
-				printProfiler = true
-			end
 		end
 	end
 
