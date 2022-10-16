@@ -28,16 +28,10 @@ local COLORS = {
 function love.load()
 
 	showDebugInfo = false
+	printProfiler = false
 
 	screenwrap = love.graphics.newShader( "shaders/screenwrap.fs" )
 	outline = love.graphics.newShader( "shaders/outline.fs" )
-
-	if showDebugInfo then
-		love.frame = 0
-		love.profiler = require( "profile" )
-		love.profiler.start()
-		love.graphics.setWireframe(true)
-	end
 
 	love.graphics.setDefaultFilter( "nearest", "nearest", 1 )
 
@@ -72,7 +66,14 @@ function love.load()
 	screenwrap:send( "dblOffsetHeight", ( bufferPadding / bufferHeight ) * 2 )
 
 	-- quad that represents the viewport of the main playable area
-	viewport = love.graphics.newQuad( bufferPadding, bufferPadding, worldWidth, worldHeight, bufferWidth, bufferHeight )
+	viewport = love.graphics.newQuad(
+		bufferPadding,
+		bufferPadding,
+		worldWidth,
+		worldHeight,
+		bufferWidth,
+		bufferHeight
+	)
 
 	-- determine the final scale the viewport should be drawn at so that the
 	-- longest dimension of the world is drawn edge to edge on the window
@@ -93,6 +94,21 @@ function love.load()
 	-- player.position[2] = bufferPadding + ( worldHeight * 0.5 )
 	player.position[1] = bufferWidth * 0.5
 	player.position[2] = bufferHeight * 0.5
+
+
+	-- DEBUG
+	love.frame = 0
+	love.profiler = require( "lib.profile" )
+	love.profiler.start()
+
+	if bufferWidth / love.graphics.getWidth() > bufferHeight / love.graphics.getHeight() then
+		debugScale = love.graphics.getWidth() / bufferWidth
+	else
+		debugScale = love.graphics.getHeight() / bufferHeight
+	end
+
+	debugPosX = ( love.graphics.getWidth() - bufferWidth * debugScale ) * 0.5
+	debugPosY = ( love.graphics.getHeight() - bufferHeight * debugScale ) * 0.5
 
 end
 
@@ -115,13 +131,25 @@ function love.update( dt )
 
 	for i = #asteroids, 1, -1 do
 		asteroids[i]:update( dt )
-		wrapPosition( asteroids[i].position, bufferPadding, worldWidth, bufferPadding, worldHeight )
+		wrapPosition(
+			asteroids[i].position,
+			bufferPadding,
+			worldWidth,
+			bufferPadding,
+			worldHeight
+		)
 	end
 
 	for i = #bullets, 1, -1 do
 		if bullets[i].alive then
 			bullets[i]:update( dt )
-			wrapPosition( bullets[i].position, bufferPadding, worldWidth, bufferPadding, worldHeight )
+			wrapPosition(
+				bullets[i].position,
+				bufferPadding,
+				worldWidth,
+				bufferPadding,
+				worldHeight
+			)
 		end
 	end
 
@@ -138,10 +166,6 @@ function love.update( dt )
 
 	if love.keyboard.isDown( "f" ) then
 		player:rotate( "right", precise, dt )
-	end
-
-	if love.keyboard.isDown( "r" ) then
-		hit = false
 	end
 
 	player:update( dt )
@@ -182,6 +206,38 @@ function love.draw()
 	-- main ship model
 	love.graphics.draw( player.model, player.position[1], player.position[2], player.rotation )
 
+	-- DEBUG
+	if showDebugInfo then
+		love.graphics.circle( "line", player.position[1], player.position[2], 1 )
+		love.graphics.circle( "line", player.position[1], player.position[2], 20 )
+
+		love.graphics.setColor( 1, 1, 1, 1 )
+		-- draw limits
+		love.graphics.rectangle("line", 1, 1, bufferPadding, bufferHeight - 2 )
+		love.graphics.rectangle("line", 1, 1, bufferWidth - 2, bufferPadding )
+		love.graphics.rectangle("line", bufferWidth - 1, bufferHeight - 1, -bufferPadding, -bufferHeight + 2 )
+		love.graphics.rectangle("line", bufferWidth - 1, bufferHeight - 1, -bufferWidth - 2, -bufferPadding )
+		-- love.graphics.rectangle("line", 1, 1, bufferWidth - 2, bufferPadding - 2 )
+		-- love.graphics.rectangle("line", worldLimits.RIGHT, 1, bufferPadding - 2, bufferHeight - 2 )
+		-- love.graphics.rectangle("line", 1, worldLimits.BOTTOM, bufferWidth - 2, bufferPadding - 2 )
+		love.graphics.setColor( COLORS.WHITE )
+
+		love.graphics.setCanvas()
+		love.graphics.setWireframe( false )
+		love.graphics.setShader( screenwrap )
+
+		love.graphics.draw( drawBufferMain, debugPosX, debugPosY, 0, debugScale )
+
+		if printProfiler then
+			love.graphics.print( love.report or "Please wait...", 0, 0 )
+			love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
+		end
+
+		love.graphics.setWireframe( true )
+		return
+	else
+		love.graphics.setWireframe( false )
+	end
 
 	--  SECOND PASS:
 	-- Sets up to draw to a second back buffer
@@ -204,20 +260,6 @@ function love.draw()
 	-- only the portion contained in the viewport quad
 	-- at viewportPosX, viewportPosY and scaled to viewportScale
 	love.graphics.draw( drawBufferSec, viewport, 0, 0, 0, viewportScale )
-
-
-	if showDebugInfo then
-		love.graphics.push()
-		love.graphics.translate( -bufferPadding, -bufferPadding )
-		love.graphics.circle( "line", player.position[1], player.position[2], 1 )
-		love.graphics.circle( "line", player.position[1], player.position[2], 20 )
-		love.graphics.pop()
-	end
-
-	if showDebugInfo then
-		love.graphics.print( love.report or "Please wait...", 0, 0 )
-		love.graphics.print( "#bullets:"..#bullets.."\n#asteroids: "..#asteroids.."\nx: "..player.position[1].."\ny: "..player.position[2].."\nr: "..player.rotation, 0, 450 )
-	end
 
 end
 
@@ -242,6 +284,10 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 
 	if key == "h" then
+		if calcInstantDeath(#asteroids) then
+			-- Kill player (instant death)
+			print("dead")
+		end
 		player.position = {
 			randomPos(
 				worldLimits.LEFT,
@@ -250,6 +296,25 @@ function love.keypressed( key, scancode, isrepeat )
 				worldLimits.BOTTOM
 			)
 		}
+	end
+
+	-- DEBUG
+	if key == "q" then
+		if showDebugInfo then
+			showDebugInfo = false
+		else
+			showDebugInfo = true
+		end
+	end
+
+	if key == "p" then
+		if showDebugInfo then
+			if printProfiler then
+				printProfiler = false
+			else
+				printProfiler = true
+			end
+		end
 	end
 
 end

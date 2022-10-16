@@ -122,6 +122,10 @@ function randomPos( xmin, ymin, xmax, ymax )
 
 end
 
+function calcInstantDeath( n_asteroids )
+	return love.math.random(62) > n_asteroids + 44
+end
+
 function printTable( aTable )
 	for index, data in ipairs( aTable ) do
 		print( index )
